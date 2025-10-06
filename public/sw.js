@@ -1,31 +1,30 @@
 // public/sw.js
-const CACHE = "stacklink-v5";
+const VERSION = 'v7';                    // ⬅️ sobe 1 sempre que mudares front-end
+const CACHE = `stacklink-${VERSION}`;
 const SHELL = [
-  "./",              // index.html
-  "./index.html",
-  "./manifest.json",
-  "./styles.css",
-  "./app.js"
-  // NÃO adiciones ficheiros de /src aqui; o SW só vê o que está em /public
+  './',
+  './index.html',
+  './styles.css',
+  './app.js',
+  './manifest.json'
 ];
 
-self.addEventListener("install", (event) => {
+// instala: pré-cache shell (ignora falhas individuais)
+self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE);
-    // adiciona um por um; ignora falhas (evita addAll falhar por 404)
-    await Promise.all(
-      SHELL.map(async (url) => {
-        try {
-          const res = await fetch(url, { cache: "no-cache" });
-          if (res.ok) await cache.put(url, res.clone());
-        } catch (_) { /* ignora */ }
-      })
-    );
+    await Promise.all(SHELL.map(async (url) => {
+      try {
+        const res = await fetch(url, { cache: 'no-cache' });
+        if (res.ok) await cache.put(url, res.clone());
+      } catch(_) {}
+    }));
   })());
-  self.skipWaiting();
+  self.skipWaiting(); // pronto para ativar já
 });
 
-self.addEventListener("activate", (event) => {
+// ativa: apaga caches antigos e assume controlo
+self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
     await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
@@ -33,18 +32,58 @@ self.addEventListener("activate", (event) => {
   })());
 });
 
-// Network-first com fallback para cache
-self.addEventListener("fetch", (event) => {
+// receber ordem para “saltar espera”
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
+// Estrategias:
+// - HTML -> network-first (para apanhar novas versões)
+// - assets same-origin (css/js/img) -> cache-first com atualização em background
+// - requests externos/Firestore -> passar direto (não cachear)
+self.addEventListener('fetch', (event) => {
   const req = event.request;
+  const url = new URL(req.url);
+
+  // ignora métodos não-GET
+  if (req.method !== 'GET') return;
+
+  // Não cachear chamadas externas (firebase, gstatic, googleapis) ou /src/
+  if (url.origin !== location.origin || url.pathname.startsWith('/src/')) return;
+
+  // HTML: network first
+  if (req.mode === 'navigate' || req.headers.get('accept')?.includes('text/html')) {
+    event.respondWith((async () => {
+      try {
+        const fresh = await fetch(req);
+        const cache = await caches.open(CACHE);
+        cache.put('./index.html', fresh.clone()).catch(()=>{});
+        return fresh;
+      } catch {
+        const cached = await caches.match('./index.html');
+        return cached || Response.error();
+      }
+    })());
+    return;
+  }
+
+  // Assets same-origin: cache first
   event.respondWith((async () => {
+    const cached = await caches.match(req);
+    if (cached) {
+      // atualiza em background
+      fetch(req).then(res => {
+        if (res.ok) caches.open(CACHE).then(c => c.put(req, res));
+      }).catch(()=>{});
+      return cached;
+    }
     try {
-      const res = await fetch(req);
+      const fresh = await fetch(req);
       const cache = await caches.open(CACHE);
-      cache.put(req, res.clone()).catch(()=>{});
-      return res;
+      if (fresh.ok) cache.put(req, fresh.clone());
+      return fresh;
     } catch {
-      const cached = await caches.match(req);
-      return cached || (req.mode === "navigate" ? caches.match("./index.html") : Response.error());
+      return Response.error();
     }
   })());
 });

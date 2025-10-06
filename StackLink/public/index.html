@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StackLink</title>
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0ea5e9" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .card {
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+      }
+    </style>
+  </head>
+  <body class="bg-white text-slate-900 transition-colors duration-200">
+    <div id="app" class="min-h-dvh">
+      <!-- Topbar -->
+      <header class="sticky top-0 z-10 backdrop-blur bg-white/70 border-b">
+        <div class="ml-auto flex items-center gap-2">
+          <button
+            id="btn-install"
+            class="hidden px-3 py-1.5 rounded-xl border hover:bg-slate-50"
+          >
+            Instalar
+          </button>
+          <button
+            id="btn-theme"
+            class="px-3 py-1.5 rounded-xl border hover:bg-slate-50"
+          >
+            🌞/🌚
+          </button>
+
+          <!-- Auth -->
+          <span id="user-chip" class="hidden text-sm px-2"></span>
+          <button
+            id="btn-login"
+            class="px-3 py-1.5 rounded-xl border hover:bg-slate-50"
+          >
+            Entrar
+          </button>
+          <button
+            id="btn-logout"
+            class="hidden px-3 py-1.5 rounded-xl border hover:bg-slate-50"
+          >
+            Sair
+          </button>
+          <button
+            id="btn-add"
+            class="px-3 py-1.5 rounded-xl bg-sky-500 text-white hover:bg-sky-600"
+          >
+            + Link
+          </button>
+        </div>
+      </header>
+
+      <!-- Toolbar -->
+      <section class="max-w-6xl mx-auto px-4 pt-6">
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="input-icon flex-1 min-w-[240px]">
+            <!-- ícone search é injectado via JS, portanto só input aqui -->
+            <input
+              id="search"
+              placeholder="Pesquisar links..."
+              class="w-full px-3 py-2 border rounded-xl"
+            />
+          </div>
+          <button
+            id="btn-new-category"
+            class="px-3 py-2 rounded-xl border hover:bg-slate-50"
+          >
+            + Nova Categoria
+          </button>
+          <select id="filter-sort" class="px-3 py-2 border rounded-xl">
+            <option value="dateDesc">Mais recentes</option>
+            <option value="nameAsc">Nome (A→Z)</option>
+            <option value="popDesc">Popularidade</option>
+          </select>
+          <label class="flex items-center gap-2">
+            <input id="view-toggle" type="checkbox" class="scale-110" />
+            <span>Vista compacta</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Pills de categorias -->
+      <section class="max-w-6xl mx-auto px-4 pt-4">
+        <div id="cat-pills" class="flex flex-wrap gap-2"></div>
+      </section>
+
+      <!-- Grelha -->
+      <main class="max-w-5xl mx-auto px-4 pb-20">
+        <div
+          id="grid"
+          class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          <!-- cartões renderizados via JS -->
+        </div>
+      </main>
+
+      <!-- Footer fixo -->
+      <nav
+        class="fixed bottom-0 left-0 right-0 border-t bg-white/90 backdrop-blur"
+      >
+        <div class="max-w-5xl mx-auto px-4 py-2 grid grid-cols-4 text-center">
+          <button class="py-2">
+            🏠
+            <div class="text-xs">Dashboard</div>
+          </button>
+          <button class="py-2">
+            📚
+            <div class="text-xs">Categorias</div>
+          </button>
+          <button class="py-2">
+            ⭐
+            <div class="text-xs">Favoritos</div>
+          </button>
+          <button class="py-2">
+            ⚙️
+            <div class="text-xs">Config.</div>
+          </button>
+        </div>
+      </nav>
+    </div>
+
+    <script>
+      // Tema claro/escuro
+      const btnTheme = document.getElementById("btn-theme");
+      const setTheme = (t) => {
+        document.documentElement.classList.toggle("dark", t === "dark");
+        document.body.classList.toggle("bg-slate-900", t === "dark");
+        document.body.classList.toggle("text-slate-100", t === "dark");
+        localStorage.setItem("theme", t);
+      };
+      setTheme(localStorage.getItem("theme") || "light");
+      btnTheme.addEventListener("click", () => {
+        const next = document.documentElement.classList.contains("dark")
+          ? "light"
+          : "dark";
+        setTheme(next);
+      });
+
+      // Prompt de instalação
+      let deferredPrompt;
+      const btnInstall = document.getElementById("btn-install");
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        btnInstall.classList.remove("hidden");
+      });
+      btnInstall.addEventListener("click", async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        btnInstall.classList.add("hidden");
+      });
+
+      // Protótipo de dados locais (substituir por Firestore + IndexedDB sync)
+      const demoCategories = [
+        { id: "cat1", name: "Investimentos", color: "#2563eb", icon: "📈" },
+        { id: "cat2", name: "Desenvolvimento", color: "#10b981", icon: "🛠️" },
+        { id: "cat3", name: "Leitura", color: "#f59e0b", icon: "📚" },
+      ];
+      const demoLinks = [
+        {
+          id: "l1",
+          title: "Guia Figma UI",
+          url: "#",
+          description: "Boas práticas de UI/UX",
+          previewImage: "https://picsum.photos/400?1",
+          categoryIds: ["cat2"],
+          isFavorite: true,
+          popularity: 5,
+          createdAt: Date.now(),
+        },
+        {
+          id: "l2",
+          title: "ETF 101",
+          url: "#",
+          description: "Introdução a ETFs",
+          previewImage: "https://picsum.photos/400?2",
+          categoryIds: ["cat1"],
+          isFavorite: false,
+          popularity: 3,
+          createdAt: Date.now() - 10000,
+        },
+        {
+          id: "l3",
+          title: "Leitura: Ensaios",
+          url: "#",
+          description: "Notas e destaques",
+          previewImage: "https://picsum.photos/400?3",
+          categoryIds: ["cat3"],
+          isFavorite: false,
+          popularity: 1,
+          createdAt: Date.now() - 20000,
+        },
+      ];
+
+      // Preencher filtros
+      const catSelect = document.getElementById("filter-category");
+      demoCategories.forEach((c) => {
+        const o = document.createElement("option");
+        o.value = c.id;
+        o.textContent = c.name;
+        catSelect.appendChild(o);
+      });
+
+      // Render
+      const grid = document.getElementById("grid");
+      function render(list, compact = false) {
+        grid.innerHTML = "";
+        list.forEach((link) => {
+          const cat = demoCategories.find((c) =>
+            link.categoryIds?.includes(c.id)
+          );
+          const el = document.createElement("a");
+          el.href = link.url;
+          el.className = `card block rounded-2xl border overflow-hidden ${
+            compact ? "p-3" : ""
+          }`;
+          el.innerHTML = compact
+            ? `
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg border" style="background:${
+              cat?.color || "#e5e7eb"
+            }"></div>
+            <div class="flex-1">
+              <div class="font-medium">${link.title}</div>
+              <div class="text-sm text-slate-500 line-clamp-1">${
+                link.description || ""
+              }</div>
+            </div>
+            <div>${link.isFavorite ? "⭐" : ""}</div>
+          </div>`
+            : `
+          <div class="aspect-video bg-slate-100">
+            <img src="${
+              link.previewImage
+            }" alt="" class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="font-semibold">${link.title}</h3>
+              <span>${link.isFavorite ? "⭐" : ""}</span>
+            </div>
+            <p class="text-slate-600 text-sm line-clamp-2">${
+              link.description || ""
+            }</p>
+            <div class="mt-3 flex items-center gap-2">
+              ${
+                cat
+                  ? `<span class="px-2 py-1 rounded-lg text-xs" style="background:${cat.color}20;color:${cat.color}">${cat.icon} ${cat.name}</span>`
+                  : ""
+              }
+            </div>
+          </div>`;
+          grid.appendChild(el);
+        });
+      }
+      render(demoLinks);
+
+      // Interações básicas
+      const search = document.getElementById("search");
+      const sort = document.getElementById("filter-sort");
+      const viewToggle = document.getElementById("view-toggle");
+
+      function applyFilters() {
+        const q = search.value.toLowerCase();
+        const cat = catSelect.value;
+        const sortBy = sort.value;
+
+        let list = demoLinks.filter(
+          (l) =>
+            (!cat || l.categoryIds?.includes(cat)) &&
+            (l.title.toLowerCase().includes(q) ||
+              (l.description || "").toLowerCase().includes(q))
+        );
+
+        if (sortBy === "dateDesc")
+          list.sort((a, b) => b.createdAt - a.createdAt);
+        if (sortBy === "nameAsc")
+          list.sort((a, b) => a.title.localeCompare(b.title));
+        if (sortBy === "popDesc")
+          list.sort((a, b) => b.popularity - a.popularity);
+
+        render(list, viewToggle.checked);
+      }
+
+      [search, catSelect, sort, viewToggle].forEach((el) =>
+        el.addEventListener("input", applyFilters)
+      );
+
+      // Registar SW
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js");
+      }
+    </script>
+
+    <!-- Modal: Adicionar Link -->
+    <div
+      id="modal-add"
+      class="fixed inset-0 hidden items-center justify-center bg-black/40"
+    >
+      <div class="bg-white rounded-2xl w-full max-w-lg p-5">
+        <h3 class="text-lg font-semibold mb-3">Adicionar Link</h3>
+        <form id="form-add" class="space-y-3">
+          <input
+            type="url"
+            id="add-url"
+            required
+            placeholder="https://..."
+            class="w-full px-3 py-2 border rounded-xl"
+          />
+          <input
+            type="text"
+            id="add-title"
+            placeholder="Título (opcional)"
+            class="w-full px-3 py-2 border rounded-xl"
+          />
+          <textarea
+            id="add-desc"
+            placeholder="Descrição (opcional)"
+            class="w-full px-3 py-2 border rounded-xl"
+          ></textarea>
+          <div class="flex gap-2">
+            <select
+              id="add-category"
+              class="flex-1 px-3 py-2 border rounded-xl"
+            ></select>
+            <label class="flex items-center gap-2 px-3 py-2 border rounded-xl">
+              <input type="checkbox" id="add-fav" /> Favorito
+            </label>
+          </div>
+          <div class="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              id="btn-cancel"
+              class="px-3 py-2 rounded-xl border"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="px-3 py-2 rounded-xl bg-sky-600 text-white"
+            >
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

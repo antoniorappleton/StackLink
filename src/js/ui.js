@@ -10,7 +10,6 @@ export function renderCategoryPills(categories, links, activeId = '') {
   const el = document.getElementById('cat-pills');
   if (!el) return;
 
-  // contar links por categoria
   const counts = {};
   links.forEach(l => (l.categoryIds || []).forEach(id => counts[id] = (counts[id] || 0) + 1));
   const total = links.length;
@@ -56,6 +55,10 @@ export function populateCategoriesSelect(categories) {
 export function renderLinks(list, categories, compact=false) {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
+  if (!list.length) {
+    grid.innerHTML = `<div class="text-slate-500 p-8">Sem links. Adiciona um com “+ Link”.</div>`;
+    return;
+  }
   list.forEach(link => {
     const cat = categories.find(c => link.categoryIds?.includes(c.id));
     const host = safeHost(link.url);
@@ -65,7 +68,7 @@ export function renderLinks(list, categories, compact=false) {
       <div class="flex items-start justify-between p-4">
         <div class="flex items-center gap-2 text-slate-500">
           ${svg('globe','w-4 h-4')}
-          <span class="text-sm">${host}</span>
+          <span class="text-sm">${host || '—'}</span>
         </div>
         <div class="flex items-center gap-1">
           <button class="icon-btn fav ${fav ? 'active':''}" data-action="fav" title="Favorito">${fav ? svg('starFill') : svg('star')}</button>
@@ -81,11 +84,11 @@ export function renderLinks(list, categories, compact=false) {
 
     const body = `
       <div class="p-4 pt-0">
-        <h3 class="text-lg font-semibold mb-1">${link.title || link.url}</h3>
+        <h3 class="text-lg font-semibold mb-1 break-words">${link.title || link.url}</h3>
         ${link.description ? `<p class="text-slate-600 text-sm mb-3">${link.description}</p>` : ''}
         <div class="flex items-center justify-between pt-3 border-t">
           <div class="text-sm text-slate-500">
-            ${cat ? `<span class="px-2 py-1 rounded-lg" style="background:${cat.color}20;color:${cat.color}">${guessIconFromName(cat.name) !== 'globe' ? svg(guessIconFromName(cat.name),'w-4 h-4 inline')+' ' : ''}${cat.name}</span>` : ''}
+            ${cat ? `<span class="px-2 py-1 rounded-lg" style="background:${cat.color}20;color:${cat.color}">${cat.name}</span>` : ''}
           </div>
           <a class="card-cta" href="${link.url}" target="_blank" rel="noopener">${svg('external','w-4 h-4')} Abrir</a>
         </div>
@@ -100,5 +103,5 @@ export function renderLinks(list, categories, compact=false) {
 }
 
 function safeHost(u='') {
-  try { return new URL(u).host.replace('www.',''); } catch { return ''; }
+  try { return new URL(u).host.replace(/^www\./,''); } catch { return ''; }
 }

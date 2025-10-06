@@ -1,6 +1,6 @@
 import './firebase-config.js';
-import { listenAuth } from './auth.js';
-import { fetchCategories, fetchLinks, addLink, toggleFavorite, removeLink } from './data.js';
+import { initAuth, listenAuth } from './auth.js';
+import { fetchCategories, fetchLinks, addLink, toggleFavorite, removeLink, addCategory } from './data.js';
 import { populateCategoriesSelect, renderLinks, renderCategoryPills, injectSearchIcon, openModal, closeModal } from './ui.js';
 
 // SW
@@ -28,16 +28,26 @@ let CATEGORIES = [];
 let LINKS = [];
 let ACTIVE_CAT = '';
 
-// Auth → carregar
+function toast(msg){
+  const t = document.getElementById('toast'); const s = document.getElementById('toast-text');
+  if (!t || !s) return; s.textContent = msg; t.classList.remove('hidden');
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.add('hidden'), 2500);
+}
+
+// Auth
+initAuth(true); // cria sessão anónima se não houver
 listenAuth(async (user) => {
   injectSearchIcon();
-  if (user) {
-    CATEGORIES = await ensureBaseCategories();
-    LINKS = await fetchLinks();
+  try {
+    if (user) {
+      CATEGORIES = await ensureBaseCategories();
+      LINKS = await fetchLinks();
+    } else {
+      CATEGORIES = []; LINKS = []; ACTIVE_CAT='';
+    }
     hydrateUI();
-  } else {
-    CATEGORIES = []; LINKS = []; ACTIVE_CAT = '';
-    hydrateUI();
+  } catch (e) {
+    console.error(e); toast('Falha ao carregar dados');
   }
 });
 
@@ -77,7 +87,7 @@ function applyFilters(){
   renderLinks(list, CATEGORIES, viewToggle?.checked);
 }
 
-// Ações no cartão: favorito / apagar / abrir (abrir já é <a>)
+// Ações no cartão
 document.getElementById('grid')?.addEventListener('click', async (e) => {
   const card = e.target.closest('article[data-id]');
   if (!card) return;
@@ -86,20 +96,18 @@ document.getElementById('grid')?.addEventListener('click', async (e) => {
   const favBtn = e.target.closest('[data-action="fav"]');
   const delBtn = e.target.closest('[data-action="del"]');
 
-  if (favBtn) {
-    const link = LINKS.find(l => l.id === id);
-    const next = !link?.isFavorite;
-    await toggleFavorite(id, next);
-    LINKS = await fetchLinks();
-    applyFilters();
-  }
-
-  if (delBtn) {
-    if (!confirm('Apagar este link?')) return;
-    await removeLink(id);
-    LINKS = await fetchLinks();
-    hydrateUI();
-  }
+  try {
+    if (favBtn) {
+      const link = LINKS.find(l => l.id === id);
+      await toggleFavorite(id, !link?.isFavorite);
+      LINKS = await fetchLinks(); applyFilters();
+    }
+    if (delBtn) {
+      if (!confirm('Apagar este link?')) return;
+      await removeLink(id);
+      LINKS = await fetchLinks(); hydrateUI();
+    }
+  } catch (e) { console.error(e); toast('Ação falhou'); }
 });
 
 // Modal + guardar link
@@ -109,7 +117,7 @@ const formAdd  = document.getElementById('form-add');
 const btnCancel= document.getElementById('btn-cancel');
 
 btnAdd?.addEventListener('click', () => {
-  if (!CATEGORIES.length) { alert('Entra com a tua conta para criar categorias.'); return; }
+  if (!CATEGORIES.length) { toast('Cria uma categoria primeiro.'); return; }
   openModal();
 });
 btnCancel?.addEventListener('click', closeModal);
@@ -122,18 +130,16 @@ formAdd?.addEventListener('submit', async (e) => {
   const desc  = document.getElementById('add-desc').value.trim();
   const cat   = document.getElementById('add-category').value || null;
   const fav   = document.getElementById('add-fav').checked;
-
   if (!url) return;
+
   try {
     await addLink({ url, title, description: desc, categoryId: cat, isFavorite: fav });
     closeModal(); formAdd.reset();
-    LINKS = await fetchLinks();
-    hydrateUI();
-  } catch (err) { console.error(err); alert('Falha ao guardar.'); }
+    LINKS = await fetchLinks(); hydrateUI();
+  } catch (e) { console.error(e); toast('Não foi possível guardar'); }
 });
 
-// categorias base na primeira vez
-import { addCategory } from './data.js';
+// categorias base (primeira vez)
 async function ensureBaseCategories(){
   let cats = await fetchCategories();
   if (cats.length) return cats;

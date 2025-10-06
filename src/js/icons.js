@@ -12,7 +12,12 @@ export function svg(name, cls = "w-5 h-5") {
     news:  `<svg xmlns="http://www.w3.org/2000/svg" class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="14" height="16" rx="2" stroke-width="1.5"/><path d="M7 8h6M7 12h6M19 7v10a3 3 0 0 1-3 3H7" stroke-width="1.5"/></svg>`,
     book:  `<svg xmlns="http://www.w3.org/2000/svg" class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 5a2 2 0 0 1 2-2h11v16H6a2 2 0 0 0-2 2zM17 3v16" stroke-width="1.5"/></svg>`,
     tv:    `<svg xmlns="http://www.w3.org/2000/svg" class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="6" width="18" height="11" rx="2" stroke-width="1.5"/><path d="M8 3l4 3 4-3" stroke-width="1.5"/></svg>`,
-    chart: `<svg xmlns="http://www.w3.org/2000/svg" class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19V5M20 19H4M7 15v-4M12 19V7M17 19v-7" stroke-width="1.5"/></svg>`
+    chart: `<svg xmlns="http://www.w3.org/2000/svg" class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19V5M20 19H4M7 15v-4M12 19V7M17 19v-7" stroke-width="1.5"/></svg>`,
+    // adiciona no objeto base:
+    home: `<svg xmlns="http://www.w3.org/2000/svg" class="\${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10.5 12 3l9 7.5v9.5H3zM9 21v-6h6v6" stroke-width="1.5"/></svg>`,
+    bookmark: `<svg xmlns="http://www.w3.org/2000/svg" class="\${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3h12v18l-6-4-6 4z" stroke-width="1.5"/></svg>`,
+    settings: `<svg xmlns="http://www.w3.org/2000/svg" class="\${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3" stroke-width="1.5"/><path d="M19.4 15a7.8 7.8 0 0 0 .1-6M4.5 9a7.8 7.8 0 0 0 0 6M9 4.6a7.8 7.8 0 0 0 6 0M15 19.4a7.8 7.8 0 0 0-6 0" stroke-width="1.5"/></svg>`,
+    folder: `<svg xmlns="http://www.w3.org/2000/svg" class="\${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 7h6l2 2h10v10H3z" stroke-width="1.5"/></svg>`
   };
   return base[name] || base.globe;
 }

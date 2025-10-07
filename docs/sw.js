@@ -1,5 +1,5 @@
 // Service Worker — cache control para Pages
-const VERSION = 'v11';
+const VERSION = 'v13';
 const CACHE = `stacklink-${VERSION}`;
 const SHELL = [
   "./",

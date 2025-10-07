@@ -6,26 +6,20 @@ import { populateCategoriesSelect, renderLinks, renderCategoryPills, injectSearc
 
 
 // SW (a página corre a partir de /public)
-if ('serviceWorker' in navigator) {
-  const reg = await navigator.serviceWorker.register("sw.js?v=11", {
-    scope: "./",
-  }); // ← mesma versão
-  // quando houver update, troca imediatamente e recarrega
-  function reloadWhenReady() {
-    if (!navigator.serviceWorker.controller) return;
-    navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
-    reg.waiting?.postMessage({ type: 'SKIP_WAITING' });
+if ("serviceWorker" in navigator) {
+  try {
+    const swUrl = `${
+      window.location.pathname.includes("/StackLink/")
+        ? "/StackLink/sw.js"
+        : "sw.js"
+    }?v=13`;
+    const reg = await navigator.serviceWorker.register(swUrl, { scope: "./" });
+    console.log("✅ Service Worker registado:", swUrl);
+  } catch (err) {
+    console.warn("⚠️ Falha ao registar Service Worker:", err);
   }
-  reg.addEventListener('updatefound', () => {
-    const sw = reg.installing;
-    if (!sw) return;
-    sw.addEventListener('statechange', () => {
-      if (sw.state === 'installed' && navigator.serviceWorker.controller) reloadWhenReady();
-    });
-  });
-  // caso o SW novo já esteja à espera
-  if (reg.waiting) reloadWhenReady();
 }
+
 
 
 // Tema

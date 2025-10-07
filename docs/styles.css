@@ -341,3 +341,20 @@ svg{ color:currentColor; opacity:.95; }  /* ícones monocromáticos */
   /* garante que o conteúdo não “fica por baixo” do header */
   .main{ padding-top: 12px; min-height: calc(100dvh - var(--header-h) - var(--footer-h)); }
 }
+/* estado compacto */
+.grid-links.compact article{
+  display:grid;
+  grid-template-columns: 56px 1fr auto;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:12px;
+}
+.grid-links.compact .card-cover{ display:none; }
+.grid-links.compact .card-body{ padding:0; }
+.grid-links.compact .card-title{ font-size:.95rem; margin:0; }
+.grid-links.compact .card-desc{ display:none; }
+.grid-links.compact .card-meta{ font-size:.82rem; }
+.grid-links.compact .card-actions{
+  position:static; display:flex; gap:6px;
+}

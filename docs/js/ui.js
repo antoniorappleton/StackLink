@@ -64,25 +64,41 @@ export function populateCategoriesSelect(categories){
 
 // docs/js/ui.js 
 export function renderLinks(list = [], categories = [], compact = false) {
-  const grid = document.getElementById('grid');
+  const grid = document.getElementById("grid");
   if (!grid) return;
 
-  grid.classList.toggle('compact', !!compact);
+  // aplica/remover modo compacto
+  grid.classList.toggle("compact", !!compact);
 
-  const catMap = new Map(categories.map(c => [c.id, c]));
-  const esc = (s='') => String(s).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+    grid.classList.toggle("compact", !!compact);
 
-  let html = '';
+  const catMap = new Map(categories.map((c) => [c.id, c]));
+  const esc = (s = "") =>
+    String(s).replace(
+      /[&<>"]/g,
+      (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m])
+    );
+
+  let html = "";
   for (const link of list) {
-    const title = esc(link.title || link.url || '');
-    const desc  = esc(link.description || '');
-    const host  = (() => { try { return new URL(link.url).hostname; } catch { return ''; } })();
+    const title = esc(link.title || link.url || "");
+    const desc = esc(link.description || "");
+    const host = (() => {
+      try {
+        return new URL(link.url).hostname;
+      } catch {
+        return "";
+      }
+    })();
 
-    const catId = (link.categoryIds && link.categoryIds[0]) || link.categoryId || null;
-    const cat   = catId ? catMap.get(catId) : null;
-    const catBadge = cat ? `<span class="tag">${esc(cat.name)}</span>` : '';
+    const catId =
+      (link.categoryIds && link.categoryIds[0]) || link.categoryId || null;
+    const cat = catId ? catMap.get(catId) : null;
+    const catBadge = cat ? `<span class="tag">${esc(cat.name)}</span>` : "";
 
-    const coverStyle = link.previewImage ? `style="background-image:url('${esc(link.previewImage)}');"` : '';
+    const coverStyle = link.previewImage
+      ? `style="background-image:url('${esc(link.previewImage)}');"`
+      : "";
 
     html += `
     <article class="link-card relative" data-id="${link.id}">
@@ -96,19 +112,22 @@ export function renderLinks(list = [], categories = [], compact = false) {
       <div class="card-body">
         <div class="card-meta">${esc(host)}</div>
         <h3 class="card-title">${title}</h3>
-        ${desc ? `<p class="card-desc">${desc}</p>` : ''}
+        ${desc ? `<p class="card-desc">${desc}</p>` : ""}
 
         <div class="card-meta" style="justify-content:space-between; margin-top:6px;">
           <div class="flex items-center gap-6">
             ${catBadge}
           </div>
-          <a href="${esc(link.url)}" target="_blank" rel="noopener" class="open-btn">Abrir</a>
+          <a href="${esc(
+            link.url
+          )}" target="_blank" rel="noopener" class="open-btn">Abrir</a>
         </div>
       </div>
     </article>`;
   }
 
-  grid.innerHTML = html || `<div class="empty">Sem links ainda. Usa “+ Link”.</div>`;
+  grid.innerHTML =
+    html || `<div class="empty">Sem links ainda. Usa “+ Link”.</div>`;
 }
 
 

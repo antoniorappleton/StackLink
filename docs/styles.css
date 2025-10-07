@@ -373,3 +373,77 @@ svg{ color: currentColor; opacity:.95; }
 @media (max-width: 640px){
   .paper-area{ padding:12px; border-radius:14px; }
 }
+/* === Layout entre header e footer === */
+:root{
+  --header-h: 64px;   /* ajusta se precisares */
+  --footer-h: 56px;   /* idem */
+  --content-bg: #f3f4f6; /* cinza claro uniforme (NYT vibe) */
+}
+
+.main{
+  background: var(--content-bg);
+  min-height: calc(100dvh - var(--header-h) - var(--footer-h));
+}
+
+/* full width, mas com respiro lateral */
+.content-area{
+  width: 100%;
+  max-width: 1400px;
+  margin-inline: auto;
+  padding: 16px clamp(12px, 3vw, 24px);
+}
+
+/* Pesquisa no body */
+.content-area .search-wrap{ position:relative; }
+.content-area .search-wrap svg{
+  position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#64748b;
+}
+.content-area .search-wrap input{
+  width:100%; height:44px; padding-left:40px;
+  background:#fff; border:1px solid #e5e7eb; border-radius:12px; color:#0f172a;
+}
+.content-area .search-wrap input::placeholder{ color:#94a3b8; }
+
+/* Pills mais leves no fundo claro */
+.content-area .pills-row .pill{
+  background:#fff; border:1px solid #e5e7eb; color:#0f172a;
+}
+.content-area .pill.active{ background:#f1f5f9; border-color:#cbd5e1; }
+.content-area .pill .count{ background:#e5e7eb; color:#334155; }
+
+/* Grelha */
+.grid-links{
+  display:grid; gap:16px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+/* Cartões – branco, borda fina, sombra leve */
+.grid-links article{
+  background:#ffffff; color:#0f172a;
+  border:1px solid #e5e7eb; border-radius:16px;
+  box-shadow: 0 2px 6px rgba(2,6,23,.05), 0 10px 24px rgba(2,6,23,.06);
+  overflow:hidden;
+}
+
+/* Área de imagem 16:9 (capa) */
+.card-cover{
+  aspect-ratio: 16 / 9;
+  background:#0b1220;          /* fallback escuro */
+  background-size: cover; background-position: center;
+}
+
+/* Bloco de texto do cartão */
+.card-body{ padding:12px 14px 10px; }
+.card-title{ font-weight:600; line-height:1.25; margin:6px 0 2px; }
+.card-desc{ color:#475569; font-size:.95rem; margin-bottom:8px; }
+.card-meta{ display:flex; align-items:center; gap:8px; color:#64748b; font-size:.87rem; }
+
+/* Ações do topo do cartão */
+.card-actions{
+  position:absolute; top:8px; right:8px; display:flex; gap:6px;
+}
+.card-actions button{
+  background:#ffffffcc; color:#1f2937; border:1px solid #e5e7eb;
+  width:34px; height:34px; border-radius:10px;
+}
+.card-actions button:hover{ background:#fff; }

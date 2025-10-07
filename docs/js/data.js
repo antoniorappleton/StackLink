@@ -199,3 +199,20 @@ export async function toggleFavorite(id, val) {
 export async function removeLink(id) {
   return OFFLINE ? dev_removeLink(id) : fs_removeLink(id);
 }
+// DEV (local)
+async function dev_updateLink(id, patch){
+  const it = mem.links.find(l => l.id === id);
+  if (it){ Object.assign(it, patch); persist(); }
+}
+
+// FIRESTORE
+async function fs_updateLink(id, patch){
+  const { doc, updateDoc, serverTimestamp } =
+    await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js");
+  await updateDoc(doc(db, COL.links, id), { ...patch, updatedAt: serverTimestamp() });
+}
+
+// export
+export async function updateLink(id, patch){
+  return OFFLINE ? dev_updateLink(id, patch) : fs_updateLink(id, patch);
+}

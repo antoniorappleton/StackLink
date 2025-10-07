@@ -62,54 +62,55 @@ export function populateCategoriesSelect(categories){
   });
 }
 
-export function renderLinks(list, categories, compact=false){
-  const grid = document.getElementById('grid'); grid.innerHTML='';
-  if (!list.length){ grid.innerHTML = `<div class="text-slate-500 p-10">Sem links ainda. Usa “+ Adicionar Link”.</div>`; return; }
+// docs/js/ui.js 
+export function renderLinks(list = [], categories = [], compact = false) {
+  const grid = document.getElementById('grid');
+  if (!grid) return;
 
-  list.forEach(link=>{
-    const cat = categories.find(c => link.categoryIds?.includes(c.id));
-    const host = (()=>{ try{ return new URL(link.url).host.replace(/^www\./,''); }catch{return ''} })();
-    const fav = !!link.isFavorite;
+  grid.classList.toggle('compact', !!compact);
 
-    const header = `
-      <div class="card-header">
-        <div class="flex items-center gap-2 text-slate-500">
-          <span class="inline-flex h-6 w-6 items-center justify-center rounded-full border border-slate-200">${svg('globe','w-3.5 h-3.5')}</span>
-          <span class="text-sm">${host || '—'}</span>
-        </div>
-        <div class="flex items-center gap-1">
-          <button class="icon-btn fav ${fav?'active':''}" data-action="fav" title="Favorito">${fav?svg('starFill'):svg('star')}</button>
-          <a class="icon-btn" href="${link.url}" target="_blank" rel="noopener" title="Abrir">${svg('external')}</a>
-          <button class="icon-btn danger" data-action="del" title="Apagar">${svg('trash')}</button>
-        </div>
-      </div>`;
+  const catMap = new Map(categories.map(c => [c.id, c]));
+  const esc = (s='') => String(s).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 
-    const media = compact ? '' : `
-      <div class="card-media">
-        ${link.previewImage ? `<img src="${link.previewImage}" alt="" class="w-full h-full object-cover" loading="lazy">` : ''}
-      </div>`;
+  let html = '';
+  for (const link of list) {
+    const title = esc(link.title || link.url || '');
+    const desc  = esc(link.description || '');
+    const host  = (() => { try { return new URL(link.url).hostname; } catch { return ''; } })();
 
-    const body = `
+    const catId = (link.categoryIds && link.categoryIds[0]) || link.categoryId || null;
+    const cat   = catId ? catMap.get(catId) : null;
+    const catBadge = cat ? `<span class="tag">${esc(cat.name)}</span>` : '';
+
+    const coverStyle = link.previewImage ? `style="background-image:url('${esc(link.previewImage)}');"` : '';
+
+    html += `
+    <article class="link-card relative" data-id="${link.id}">
+      <div class="card-cover" ${coverStyle}></div>
+
+      <div class="card-actions">
+        <button data-action="fav" title="Favorito">★</button>
+        <button data-action="del" title="Apagar">🗑</button>
+      </div>
+
       <div class="card-body">
-        <div class="card-title">${link.title || link.url}</div>
-        ${link.description ? `<p class="card-sub">${link.description}</p>` : ''}
-        <div class="card-foot">
-          <div class="text-sm">
-            ${cat ? `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-slate-200">${svg(guessIcon(cat.name),'w-3.5 h-3.5')}<span>${cat.name}</span></span>` : ''}
-          </div>
-          <a class="inline-flex items-center gap-1 text-sm font-semibold text-slate-700 hover:underline" href="${link.url}" target="_blank" rel="noopener">
-            ${svg('external','w-4 h-4')} Abrir
-          </a>
-        </div>
-      </div>`;
+        <div class="card-meta">${esc(host)}</div>
+        <h3 class="card-title">${title}</h3>
+        ${desc ? `<p class="card-desc">${desc}</p>` : ''}
 
-    const el = document.createElement('article');
-    el.className = `card`;
-    el.dataset.id = link.id;
-    el.innerHTML = header + media + body;
-    grid.appendChild(el);
-  });
+        <div class="card-meta" style="justify-content:space-between; margin-top:6px;">
+          <div class="flex items-center gap-6">
+            ${catBadge}
+          </div>
+          <a href="${esc(link.url)}" target="_blank" rel="noopener" class="open-btn">Abrir</a>
+        </div>
+      </div>
+    </article>`;
+  }
+
+  grid.innerHTML = html || `<div class="empty">Sem links ainda. Usa “+ Link”.</div>`;
 }
+
 
 
 export function openModal(){ const m=document.getElementById('modal-add'); if(!m) return; m.classList.remove('hidden'); m.classList.add('flex'); }

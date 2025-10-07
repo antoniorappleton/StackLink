@@ -1,6 +1,8 @@
 // docs/js/main.js
 import { initFirebase, OFFLINE } from "./firebase-config.js";
 import { initAuth, listenAuth } from "./auth.js";
+import { getPreview } from './preview.js';
+import { updateLink } from './data.js'; // além dos que já importas
 import {
   fetchCategories,
   fetchLinks,
@@ -95,6 +97,12 @@ listenAuth(async (user) => {
       LINKS = [];
       ACTIVE_CAT = "";
     }
+    if (user || OFFLINE) {
+      CATEGORIES = await ensureBaseCategories();
+      LINKS = await fetchLinks();
+      backfillPreviews(); // <- preenche thumbnails em falta
+    }
+
     // mostrar/esconder chip do utilizador
     const chip = document.getElementById("user-chip");
     const nameEl = document.getElementById("user-name");
@@ -205,6 +213,20 @@ const modal = document.getElementById("modal-add");
 const formAdd = document.getElementById("form-add");
 const btnCancel = document.getElementById("btn-cancel");
 
+async function backfillPreviews() {
+  const missing = LINKS.filter((l) => !l.previewImage && l.url);
+  for (const l of missing) {
+    try {
+      const meta = await getPreview(l.url);
+      if (meta?.image) {
+        await updateLink(l.id, { previewImage: meta.image });
+      }
+    } catch {}
+  }
+}
+
+
+
 // Modal Nova Categoria
 const catModal = document.getElementById("cat-modal");
 const catForm = document.getElementById("cat-form");
@@ -266,12 +288,17 @@ formAdd?.addEventListener("submit", async (e) => {
   if (!url) return;
 
   try {
+    let previewImage = "";
+    const meta = await getPreview(url);
+    if (meta?.image) previewImage = meta.image;
+
     await addLink({
       url,
       title,
       description: desc,
       categoryId: cat,
       isFavorite: fav,
+      previewImage,
     });
     closeModal();
     formAdd.reset();

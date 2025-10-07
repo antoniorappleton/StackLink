@@ -1,0 +1,78 @@
+/* -------- Base ---------- */
+html,body{ font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; }
+body{ background: linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%); }
+
+/* -------- Botões -------- */
+.btn{ display:inline-flex; align-items:center; gap:.5rem; padding:.625rem 1rem; border-radius:999px; border:1px solid #e2e8f0; font-weight:600; transition:all .15s ease; }
+.btn:hover{ background:#f8fafc; transform: translateY(-1px); }
+.btn:focus-visible{ outline:0; box-shadow: var(--shadow-focus,0 0 0 4px rgba(14,165,233,.15)); }
+.btn-primary{ background:#0ea5e9; color:#fff; border-color:#0ea5e9; box-shadow:0 6px 18px rgba(14,165,233,.25); }
+.btn-primary:hover{ background:#0284c7; }
+.btn-ghost{ background:#fff; }
+.btn-icon{ padding:.5rem .625rem; border-radius:12px; border:1px solid #e2e8f0; }
+
+/* -------- Search -------- */
+.input-icon{ position:relative; }
+.input-icon svg{ position:absolute; left:.9rem; top:50%; transform:translateY(-50%); color:#94a3b8; }
+.input-icon input{ padding:.65rem 1rem .65rem 2.5rem; border:1px solid #e2e8f0; border-radius:14px; background:#fff; transition: box-shadow .15s, border-color .15s; }
+.input-icon input:focus{ border-color:#bae6fd; box-shadow: var(--shadow-focus,0 0 0 4px rgba(14,165,233,.15)); outline:0; }
+
+/* -------- Pills -------- */
+.pill{ display:inline-flex; align-items:center; gap:.5rem; padding:.45rem .8rem; border-radius:14px; border:1px solid #e2e8f0; background:#ffffff; color:#0f172a; transition:all .15s; }
+.pill:hover{ box-shadow:0 8px 18px rgba(2,6,23,.06); transform:translateY(-1px); }
+.pill .count{ font-size:.75rem; padding:.125rem .5rem; border-radius:999px; background:#f1f5f9; }
+.pill.active{ background:#e6f4ff; border-color:#bfdbfe; color:#0b84e5; }
+.pill.active .count{ background:#dbeafe; color:#0b84e5; }
+
+/* -------- Cards -------- */
+.card{ border:1px solid #e2e8f0; border-radius:18px; background:#fff; overflow:hidden; box-shadow:0 6px 24px rgba(2,6,23,.04); transition:transform .15s, box-shadow .15s, border-color .15s; }
+.card:hover{ transform:translateY(-2px); box-shadow:0 16px 40px rgba(2,6,23,.08); border-color:#dbeafe; }
+.card-header{ padding:1rem; display:flex; align-items:flex-start; justify-content:space-between; }
+.card-media{ aspect-ratio: 16/9; background:#f1f5f9; }
+.card-body{ padding:1rem; padding-top:.75rem; }
+.card-title{ font-weight:700; font-size:1.05rem; }
+.card-sub{ color:#64748b; font-size:.9rem; margin-top:.25rem; }
+.card-foot{ padding-top:.75rem; margin-top:.75rem; border-top:1px solid #e2e8f0; display:flex; align-items:center; justify-content:space-between; }
+.icon-btn{ padding:.5rem; border-radius:10px; transition:background .15s, color .15s; color:#475569; }
+.icon-btn:hover{ background:#f1f5f9; }
+.icon-btn.danger:hover{ background:#fee2e2; color:#dc2626; }
+.icon-btn.fav.active{ color:#f59e0b; }
+
+/* -------- SVG mono -------- */
+:root{ --icon-color:#0f172a; }
+svg{ color:var(--icon-color); }   /* todos os SVG usam currentColor */
+
+/* -------- Footer -------- */
+.app-footer-btn{ display:flex; flex-direction:column; align-items:center; gap:.3rem; padding:.5rem 0; color:#475569; }
+.app-footer-btn .label{ font-size:.72rem; }
+.app-footer-btn.active{ color:#0b84e5; font-weight:700; }
+
+html,body{ font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; }
+body{ background: linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%); }
+
+/* botões util */
+.btn{ display:inline-flex; align-items:center; gap:.5rem; padding:.625rem 1rem; border-radius:999px; border:1px solid #e2e8f0; font-weight:600; transition:all .15s ease; }
+.btn:hover{ background:#f8fafc; transform: translateY(-1px); }
+.btn:focus-visible{ outline:0; box-shadow:0 0 0 4px rgba(14,165,233,.15); }
+.btn-primary{ background:#0ea5e9; color:#fff; border-color:#0ea5e9; box-shadow:0 6px 18px rgba(14,165,233,.25); }
+.btn-primary:hover{ background:#0284c7; }
+
+/* pills */
+.pill{ display:inline-flex; align-items:center; gap:.5rem; padding:.45rem .8rem; border-radius:14px; border:1px solid #e2e8f0; background:#fff; transition:all .15s; }
+.pill .count{ font-size:.75rem; padding:.125rem .5rem; border-radius:999px; background:#f1f5f9; }
+.pill.active{ background:#e6f4ff; border-color:#bfdbfe; color:#0b84e5; }
+.pill.active .count{ background:#dbeafe; color:#0b84e5; }
+
+/* cards */
+.card{ border:1px solid #e2e8f0; border-radius:18px; background:#fff; overflow:hidden; box-shadow:0 6px 24px rgba(2,6,23,.04); transition:transform .15s, box-shadow .15s, border-color .15s; }
+.card:hover{ transform:translateY(-2px); box-shadow:0 16px 40px rgba(2,6,23,.08); border-color:#dbeafe; }
+.card-media{ aspect-ratio:16/9; background:#f1f5f9; }
+
+/* svg monocromático */
+:root{ --icon-color:#0f172a; }
+svg{ color:var(--icon-color); }
+
+/* footer */
+.app-footer-btn{ display:flex; flex-direction:column; align-items:center; gap:.3rem; padding:.5rem 0; color:#475569; }
+.app-footer-btn .label{ font-size:.72rem; }
+.app-footer-btn.active{ color:#0b84e5; font-weight:700; }

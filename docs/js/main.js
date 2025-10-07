@@ -7,7 +7,9 @@ import { populateCategoriesSelect, renderLinks, renderCategoryPills, injectSearc
 
 // SW (a página corre a partir de /public)
 if ('serviceWorker' in navigator) {
-  const reg = await navigator.serviceWorker.register('./sw.js?v=7'); // ← mesma versão
+  const reg = await navigator.serviceWorker.register("sw.js?v=11", {
+    scope: "./",
+  }); // ← mesma versão
   // quando houver update, troca imediatamente e recarrega
   function reloadWhenReady() {
     if (!navigator.serviceWorker.controller) return;

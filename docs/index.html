@@ -75,9 +75,9 @@
       <header class="topbar">
           <div class="container toolbar-no-search">
             <!-- Marca -->
-            <a class="brand flex items-center gap-3" href="#">
-              <img src="icons/icon-192.png" alt="StackLink" class="w-7 h-7 rounded-xl" />
-              <span class="font-semibold text-white">StackLink</span>
+            <a class="brand flex items-center gap-15" href="#">
+                <img src="/STACKLINK.png" alt="StackLink" class="brand-logo w-14 h-14" />
+                <span class="font-semibold text-white">StackLink</span>
             </a>
 
             <!-- Sort -->
@@ -128,25 +128,37 @@
           <section id="grid" class="grid-links"></section>
         </div>
       </main>
-
-
+    <!--Ecrã “Categorias” (gestão)-->
+      <section id="view-categories" class="hidden">
+        <div class="content-area !max-w-3xl">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-xl font-semibold">Categorias</h2>
+            <button id="btn-new-category" class="btn btn-primary">+ Nova</button>
+          </div>
+          <div id="cat-list" class="space-y-2"></div>
+        </div>
+      </section>
 
       <!-- Footer -->
       <footer class="footer">
-        <div class="container grid grid-cols-4 text-center">
-          <button id="ft-home" class="app-footer-btn active">
-            <span class="label">Dashboard</span>
-          </button>
-          <button id="ft-cats" class="app-footer-btn">
-            <span class="label">Categorias</span>
-          </button>
-          <button id="ft-fav" class="app-footer-btn">
-            <span class="label">Favoritos</span>
-          </button>
-          <button id="ft-settings" class="app-footer-btn">
-            <span class="label">Config.</span>
-          </button>
-        </div>
+  <div class="container grid grid-cols-4">
+    <button id="ft-home" class="app-footer-btn active">
+      <span id="ico-home" class="fi" aria-hidden="true"></span>
+      <div class="label">Dashboard</div>
+    </button>
+    <button id="ft-cats" class="app-footer-btn">
+      <span id="ico-cats" class="fi" aria-hidden="true"></span>
+      <div class="label">Categorias</div>
+    </button>
+    <button id="ft-fav" class="app-footer-btn">
+      <span id="ico-fav" class="fi" aria-hidden="true"></span>
+      <div class="label">Favoritos</div>
+    </button>
+    <button id="ft-settings" class="app-footer-btn">
+      <span id="ico-settings" class="fi" aria-hidden="true"></span>
+      <div class="label">Config.</div>
+    </button>
+  </div>
       </footer>
     </div>
 

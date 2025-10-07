@@ -447,3 +447,55 @@ svg{ color: currentColor; opacity:.95; }
   width:34px; height:34px; border-radius:10px;
 }
 .card-actions button:hover{ background:#fff; }
+/* === LOGO CORES === */
+.brand-logo {
+  filter: brightness(0) invert(1); /* torna o logo branco */
+  transition: filter 0.3s ease;
+}
+
+/* Se tiveres tema claro/escuro, volta ao normal no claro */
+html:not(.dark) .brand-logo {
+  filter: none;
+}
+/* === Botões “pro” === */
+.btn{ --b:12px; --pad:0.55rem 0.9rem;
+  display:inline-flex; align-items:center; gap:.5rem;
+  border-radius:var(--b); padding:var(--pad); font-weight:600;
+  border:1px solid transparent; transition:.15s ease;
+}
+.btn:disabled{ opacity:.6; pointer-events:none }
+
+.btn-primary{
+  background:linear-gradient(180deg,#2d6dfd,#1c52d6);
+  color:#fff; box-shadow:0 8px 20px rgba(45,109,253,.28);
+}
+.btn-primary:hover{ filter:brightness(1.05) }
+
+.btn-ghost{
+  background:rgba(255,255,255,.06);
+  border-color:rgba(255,255,255,.14);
+  color:#e5edff;
+}
+.btn-ghost:hover{ background:rgba(255,255,255,.12) }
+
+.btn-danger{
+  background:#ef4444; color:#fff; box-shadow:0 8px 20px rgba(239,68,68,.25);
+}
+.icon-btn{
+  width:36px;height:36px; display:inline-grid; place-items:center;
+  border-radius:10px; background:rgba(255,255,255,.08); color:#e5edff; border:1px solid rgba(255,255,255,.12);
+}
+.icon-btn:hover{ background:rgba(255,255,255,.14) }
+/* Footer icons */
+.footer { background:#102748; color:#cfe0ff; }
+.footer .app-footer-btn{
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:.6rem 0; color:#cfe0ff; opacity:.9;
+}
+.footer .app-footer-btn .fi{
+  width:22px; height:22px; display:inline-block; line-height:0;
+  opacity:.8; transition:opacity .15s ease, transform .15s ease;
+}
+.footer .app-footer-btn.active{ color:#fff; opacity:1; }
+.footer .app-footer-btn.active .fi{ opacity:1; transform:translateY(-1px); }
+.footer .app-footer-btn .label{ font-size:.82rem; }

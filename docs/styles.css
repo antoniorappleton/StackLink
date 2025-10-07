@@ -278,3 +278,66 @@ svg{ color:currentColor; opacity:.95; }  /* ícones monocromáticos */
   .brand-name{ font-size:16px; }
   .content-area{ padding:12px; }
 }
+/* ===================== */
+/* HEADER — AJUSTES MOBILE */
+/* ===================== */
+@media (max-width: 640px){
+
+  :root{
+    --header-h: 96px;               /* altura efetiva no mobile */
+  }
+
+  .topbar{
+    padding-top: max(10px, env(safe-area-inset-top));
+    padding-bottom: 10px;
+    background: linear-gradient(180deg,#0f264d 0%, #0b1f3e 100%);
+    box-shadow: 0 1px 0 rgba(255,255,255,.06);
+  }
+
+  /* grid claro: 1ª linha = brand + user | 2ª linha = sort + actions + view */
+  .toolbar-no-search{
+    display:grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "brand . user"
+      "sort  actions view";
+    row-gap: 10px; column-gap: 10px;
+    align-items:center;
+  }
+  .brand{ grid-area: brand; margin-left: 0; }
+  #user-chip{ grid-area: user; justify-self: end; }
+  .select-wrap{ grid-area: sort; }
+  .actions{ grid-area: actions; justify-self: start; }
+  .view-toggle-wrap{ grid-area: view; justify-self: end; }
+
+  /* legibilidade dos controlos no header */
+  .select{
+    background: rgba(255,255,255,.08);
+    color:#eaf0ff;
+    border-color: rgba(255,255,255,.18);
+    height: 40px;
+  }
+  .select-wrap:after{ color:#caddff; }
+
+  .btn{ height:40px; padding:.5rem .8rem; }
+  .btn-ghost{
+    background: rgba(255,255,255,.10);
+    border-color: rgba(255,255,255,.16);
+    color:#eaf0ff;
+  }
+  .btn-primary{ box-shadow: 0 8px 18px rgba(45,109,253,.32); }
+
+  /* chip do utilizador mais nítido */
+  .user-chip{
+    background: rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.18);
+    color:#fff;
+  }
+
+  /* logo + nome sempre visíveis */
+  .brand .logo{ width:26px; height:26px; }
+  .brand-name{ font-size:16px; color:#fff; }
+
+  /* garante que o conteúdo não “fica por baixo” do header */
+  .main{ padding-top: 12px; min-height: calc(100dvh - var(--header-h) - var(--footer-h)); }
+}

@@ -95,6 +95,18 @@ listenAuth(async (user) => {
       LINKS = [];
       ACTIVE_CAT = "";
     }
+    // mostrar/esconder chip do utilizador
+    const chip = document.getElementById("user-chip");
+    const nameEl = document.getElementById("user-name");
+    if (user) {
+      const nick =
+        user.displayName || user.email?.split("@")[0] || "Utilizador";
+      if (nameEl) nameEl.textContent = nick;
+      chip?.classList.remove("hidden");
+    } else {
+      chip?.classList.add("hidden");
+    }
+
     hydrateUI();
   } catch (e) {
     console.error(e);
@@ -314,3 +326,7 @@ if (window.innerWidth < 480) {
   const vt = document.getElementById("view-toggle");
   if (vt && !vt.checked) vt.checked = true;
 }
+document.getElementById("btn-logout")?.addEventListener("click", () => {
+  // exposto pelo auth.js que te passei (window.__logout)
+  if (window.__logout) window.__logout();
+});

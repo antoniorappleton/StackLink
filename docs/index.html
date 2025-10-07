@@ -73,51 +73,58 @@
     <div id="app" class="min-h-dvh flex flex-col">
       <!-- Topbar -->
       <header class="topbar">
-        <div class="container header-actions">
-          <button id="btn-add" class="btn btn-primary">+ Adicionar Link</button>
+          <div class="container toolbar-no-search">
+            <!-- Marca -->
+            <a class="brand flex items-center gap-3" href="#">
+              <img src="icons/icon-192.png" alt="StackLink" class="w-7 h-7 rounded-xl" />
+              <span class="font-semibold text-white">StackLink</span>
+            </a>
 
-          <div class="select-wrap">
-            <select id="filter-sort" class="select">
-              <option value="dateDesc">Mais recentes</option>
-              <option value="nameAsc">Nome (A→Z)</option>
-              <option value="popDesc">Popularidade</option>
-            </select>
+            <!-- Sort -->
+            <div class="select-wrap">
+              <select id="filter-sort" class="select">
+                <option value="dateDesc">Mais recentes</option>
+                <option value="nameAsc">Nome (A→Z)</option>
+                <option value="popDesc">Popularidade</option>
+              </select>
+            </div>
+
+            <!-- Vista compacta -->
+            <label class="view-toggle-wrap flex items-center gap-2">
+              <input id="view-toggle" type="checkbox" />
+              <span class="subtle">Vista compacta</span>
+            </label>
+
+            <!-- Ações -->
+            <div class="actions flex items-center gap-2">
+              <button id="btn-new-category" class="btn btn-sm">+ Categoria</button>
+              <button id="btn-add" class="btn btn-primary btn-sm">+ Link</button>
+            </div>
+
+            <!-- Utilizador -->
+            <div id="user-chip" class="user-chip hidden">
+              <span id="user-name">—</span>
+              <button id="btn-logout" class="icon-btn" title="Sair">⎋</button>
+            </div>
           </div>
-
-          <label class="view-toggle-wrap flex items-center gap-2">
-            <input id="view-toggle" type="checkbox" />
-            <span class="subtle">Vista compacta</span>
-          </label>
-        </div>
       </header>
 
       <!-- Conteúdo -->
       <main class="main flex-1">
-        <div class="container">
+        <div class="container paper-area">
           <!-- Pesquisa -->
           <div class="search-wrap mb-3">
-            <!-- o ícone pode ser injetado via JS, mas já deixo um fallback -->
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              class="hidden md:block"
-            >
-              <circle cx="11" cy="11" r="7" stroke-width="1.5"></circle>
-              <path d="m20 20-3.5-3.5" stroke-width="1.5"></path>
-            </svg>
-            <input id="search" type="text" placeholder="Pesquisar links..." />
+            ...
           </div>
 
           <!-- Pills -->
           <div id="cat-pills" class="pills-row mb-3"></div>
 
-          <!-- Grid -->
+          <!-- Grelha -->
           <section id="grid" class="grid-links"></section>
         </div>
       </main>
+
 
       <!-- Footer -->
       <footer class="footer">

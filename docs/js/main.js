@@ -225,6 +225,92 @@ async function backfillPreviews() {
   }
 }
 
+function showView(id) {
+  const mainArea =
+    document.querySelector(".main") ||
+    document.getElementById("grid")?.closest("main");
+  const catsView = document.getElementById("view-categories");
+  const settings = document.getElementById("view-settings");
+
+  const off = (v) => v && v.classList.add("hidden");
+  const on = (v) => v && v.classList.remove("hidden");
+
+  off(mainArea);
+  off(catsView);
+  off(settings);
+
+  if (id === "cats") on(catsView);
+  else if (id === "settings") on(settings);
+  else on(mainArea);
+}
+
+function renderCategoryManager() {
+  const wrap = document.getElementById("cat-list");
+  if (!wrap) return;
+  wrap.innerHTML =
+    CATEGORIES.map((c) => {
+      const count = LINKS.filter((l) =>
+        (l.categoryIds || []).includes(c.id)
+      ).length;
+      return `
+      <div class="cat-row" data-id="${c.id}">
+        <div class="meta">
+          <span class="cat-dot" style="background:${
+            c.color || "#64748b"
+          }"></span>
+          <strong>${c.name || "—"}</strong>
+          <span class="text-slate-500">(${count})</span>
+        </div>
+        <div class="cat-actions">
+          <button class="btn btn-ghost" data-act="edit">Editar</button>
+          <button class="btn btn-danger" data-act="del">Eliminar</button>
+        </div>
+      </div>`;
+    }).join("") || `<div class="text-slate-500">Sem categorias ainda.</div>`;
+}
+
+document.getElementById("ft-cats")?.addEventListener("click", () => {
+  setActiveFooter("ft-cats");
+  showView("cats");
+  renderCategoryManager();
+});
+document.getElementById("ft-home")?.addEventListener("click", () => {
+  setActiveFooter("ft-home");
+  showView("home");
+});
+document.getElementById("ft-settings")?.addEventListener("click", () => {
+  setActiveFooter("ft-settings");
+  showView("settings");
+});
+
+// clicks editar/apagar
+document.getElementById("cat-list")?.addEventListener("click", (e) => {
+  const row = e.target.closest(".cat-row");
+  if (!row) return;
+  const id = row.dataset.id;
+  const act = e.target.closest("[data-act]")?.dataset.act;
+  if (act === "edit") {
+    const ev = new CustomEvent("ui:open-edit-category", { detail: { id } });
+    window.dispatchEvent(ev);
+  }
+  if (act === "del") {
+    (async () => {
+      if (!confirm("Eliminar esta categoria?")) return;
+      try {
+        await removeCategory(id);
+        CATEGORIES = await fetchCategories();
+        LINKS = await fetchLinks();
+        renderCategoryManager();
+        renderCategoryPills(CATEGORIES, LINKS, ACTIVE_CAT);
+        applyFilters();
+        toast("Categoria eliminada.");
+      } catch (err) {
+        console.error(err);
+        toast("Falha ao eliminar.");
+      }
+    })();
+  }
+});
 
 
 // Modal Nova Categoria

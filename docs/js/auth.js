@@ -1,159 +1,130 @@
-// src/js/auth.js
-import { auth, OFFLINE } from './firebase-config.js';
+// docs/js/auth.js
+import { app } from "./firebase-config.js";
 
-const listeners = new Set();
-export function listenAuth(cb){ listeners.add(cb); return ()=>listeners.delete(cb); }
-const notify = (u)=> listeners.forEach(fn=>{ try{ fn(u); }catch{} });
+let _auth = null;
+let _onAuthCb = null;
 
-const $ = (id)=> document.getElementById(id);
-const toast = (msg)=>{
-  const t = $('toast'), s = $('toast-text'); if(!t||!s) return;
-  s.textContent = msg; t.classList.remove('hidden');
-  clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.add('hidden'), 2600);
-};
+// helpers DOM seguros
+const $ = (id) => document.getElementById(id);
+const has = (el) => !!el;
+const show = (el) =>
+  el &&
+  el.classList &&
+  (el.classList.remove("hidden"), el.classList.add("flex"));
+const hide = (el) =>
+  el &&
+  el.classList &&
+  (el.classList.add("hidden"), el.classList.remove("flex"));
 
-export async function initAuth(){
-  const modal   = $('auth-modal');
-  const title   = $('auth-title');
-  const sub     = $('auth-sub');
-  const tabIn   = $('tab-login');
-  const tabUp   = $('tab-signup');
-  const form    = $('auth-form');
-  const email   = $('auth-email');
-  const pass    = $('auth-pass');
-  const nameIn  = $('auth-name');
-  const extra   = $('auth-extra');
-  const submit  = $('auth-submit');
-  const msg     = $('auth-msg');
-  const forgot  = $('auth-forgot');
-  const chip    = $('user-chip');
-  const btnIn   = $('btn-login');
-  const btnOut  = $('btn-logout');
-  const btnClose= $('auth-close'); // continua hidden para forçar login
+function switchTab(mode = "login") {
+  const tLogin = $("tab-login");
+  const tSignup = $("tab-signup");
+  const title = $("auth-title");
+  const sub = $("auth-sub");
+  const extra = $("auth-extra");
 
-  let mode = 'login'; // 'login' | 'signup'
+  if (!tLogin || !tSignup || !title || !sub) return;
 
-  function openModal(){
-    msg.textContent = '';
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    email.focus();
+  if (mode === "login") {
+    tLogin.classList.add("bg-white/5", "border-white/10");
+    tSignup.classList.remove("bg-white/5");
+    title.textContent = "Entrar";
+    sub.textContent = "Usa o teu e-mail e palavra-passe.";
+    if (extra) extra.classList.add("hidden");
+  } else {
+    tSignup.classList.add("bg-white/5", "border-white/10");
+    tLogin.classList.remove("bg-white/5");
+    title.textContent = "Criar conta";
+    sub.textContent = "Cria a tua conta com e-mail e palavra-passe.";
+    if (extra) extra.classList.remove("hidden");
   }
-  function closeModal(){
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-  }
-  function setMode(next){
-    mode = next;
-    const isUp = mode === 'signup';
-    tabIn.classList.toggle('bg-slate-50', !isUp);
-    tabUp.classList.toggle('bg-slate-50',  isUp);
-    extra.classList.toggle('hidden', !isUp);
-    title.textContent = isUp ? 'Criar conta' : 'Entrar';
-    sub.textContent   = isUp ? 'Cria a tua conta com e-mail e palavra-passe.'
-                             : 'Usa o teu e-mail e palavra-passe.';
-    msg.textContent = '';
-  }
-
-  if (OFFLINE) {
-    // modo dev: não pede login
-    chip.textContent = 'Dev mode (offline)';
-    chip.classList.remove('hidden');
-    btnIn?.classList.add('hidden');
-    btnOut?.classList.add('hidden');
-    notify(null);
-    return;
-  }
-
-  const {
-    onAuthStateChanged, signOut,
-    setPersistence, browserLocalPersistence,
-    signInWithEmailAndPassword, createUserWithEmailAndPassword,
-    updateProfile, sendPasswordResetEmail
-  } = await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js");
-
-  await setPersistence(auth, browserLocalPersistence);
-
-  // Tab handlers
-  tabIn?.addEventListener('click', ()=> setMode('login'));
-  tabUp?.addEventListener('click', ()=> setMode('signup'));
-  btnClose?.addEventListener('click', closeModal);
-
-  // Forgot password
-  forgot?.addEventListener('click', async ()=>{
-    msg.textContent = '';
-    const addr = email.value.trim();
-    if(!addr){ msg.textContent = 'Escreve o teu e-mail para recuperar.'; email.focus(); return; }
-    try{ await sendPasswordResetEmail(auth, addr); toast('Email de recuperação enviado.'); }
-    catch(e){ msg.textContent = mapAuthError(e); }
-  });
-
-  // Form submit
-  form?.addEventListener('submit', async (e)=>{
-    e.preventDefault();
-    msg.textContent = '';
-    submit.disabled = true;
-
-    const addr = email.value.trim();
-    const pwd  = pass.value.trim();
-
-    try {
-      if (mode === 'login') {
-        await signInWithEmailAndPassword(auth, addr, pwd);
-      } else {
-        const cred = await createUserWithEmailAndPassword(auth, addr, pwd);
-        const nick = nameIn.value.trim();
-        if (nick) { try { await updateProfile(cred.user, { displayName: nick }); } catch {} }
-        toast('Conta criada! Bem-vindo 👋');
-      }
-    } catch (e) {
-      msg.textContent = mapAuthError(e);
-    } finally {
-      submit.disabled = false;
-    }
-  });
-
-  // Botões da topbar
-  btnIn?.addEventListener('click', ()=> { setMode('login'); openModal(); });
-  btnOut?.addEventListener('click', async () => {
-      try { await signOut(auth); } catch {}
-      // limpa inputs do modal
-      (document.getElementById('auth-email')||{}).value = '';
-      (document.getElementById('auth-pass')||{}).value  = '';
-      (document.getElementById('auth-name')||{}).value  = '';
-    });
-
-
-  // Estado de sessão
-  onAuthStateChanged(auth, (user)=>{
-    if (user) {
-      chip.textContent = user.displayName || user.email || 'Sessão iniciada';
-      chip.classList.remove('hidden');
-      btnOut?.classList.remove('hidden');
-      btnIn?.classList.add('hidden');
-      (document.getElementById('auth-email')||{}).value = '';
-      (document.getElementById('auth-pass')||{}).value  = '';
-      (document.getElementById('auth-name')||{}).value  = '';
-      closeModal();
-    } else {
-      chip.classList.add('hidden');
-      btnOut?.classList.add('hidden');
-      btnIn?.classList.remove('hidden');
-      setMode('login');
-      openModal(); // <- força modal ao arrancar sem sessão
-    }
-    notify(user);
-  });
 }
 
-function mapAuthError(e){
-  const c = e?.code || '';
-  if (c==='auth/invalid-email') return 'E-mail inválido.';
-  if (c==='auth/missing-password') return 'Senha em falta.';
-  if (c==='auth/weak-password') return 'Senha demasiado fraca.';
-  if (c==='auth/user-not-found') return 'Utilizador não existe.';
-  if (c==='auth/wrong-password') return 'Senha incorreta.';
-  if (c==='auth/too-many-requests') return 'Muitas tentativas. Tenta mais tarde.';
-  if (c==='auth/network-request-failed') return 'Sem rede.';
-  return 'Falha na autenticação.';
+function openAuth() {
+  show($("auth-modal"));
+}
+function closeAuth() {
+  hide($("auth-modal"));
+}
+
+// exposto ao main
+export function listenAuth(cb) {
+  _onAuthCb = cb;
+}
+
+export async function initAuth() {
+  // carrega SDK Auth
+  const {
+    getAuth,
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    sendPasswordResetEmail,
+    updateProfile,
+    signOut,
+  } = await import(
+    "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"
+  );
+
+  _auth = getAuth(app);
+
+  // listeners de UI (se existirem)
+  $("tab-login")?.addEventListener("click", () => switchTab("login"));
+  $("tab-signup")?.addEventListener("click", () => switchTab("signup"));
+  $("auth-close")?.addEventListener("click", closeAuth);
+
+  $("auth-forgot")?.addEventListener("click", async () => {
+    const email = $("auth-email")?.value?.trim();
+    const msg = $("auth-msg");
+    if (!email) {
+      if (msg) msg.textContent = "Escreve o teu e-mail para recuperar.";
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(_auth, email);
+      if (msg) msg.textContent = "Email de recuperação enviado.";
+    } catch (e) {
+      if (msg) msg.textContent = "Falha ao enviar recuperação.";
+      console.error(e);
+    }
+  });
+
+  $("auth-form")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = $("auth-email")?.value?.trim();
+    const pass = $("auth-pass")?.value?.trim();
+    const name = $("auth-name")?.value?.trim();
+    const isSignup = $("tab-signup")?.classList.contains("bg-white/5");
+    const msg = $("auth-msg");
+    if (msg) msg.textContent = "";
+
+    try {
+      if (isSignup) {
+        const cred = await createUserWithEmailAndPassword(_auth, email, pass);
+        if (name) await updateProfile(cred.user, { displayName: name });
+      } else {
+        await signInWithEmailAndPassword(_auth, email, pass);
+      }
+      closeAuth();
+      $("auth-form")?.reset();
+    } catch (err) {
+      console.error(err);
+      if (msg) msg.textContent = "Credenciais inválidas ou conta inexistente.";
+    }
+  });
+
+  // estado de autenticação
+  onAuthStateChanged(_auth, (user) => {
+    // se não estiver autenticado, abre modal (só no primeiro arranque)
+    if (!user) {
+      switchTab("login");
+      openAuth();
+    } else {
+      closeAuth();
+    }
+    _onAuthCb?.(user || null);
+  });
+
+  // API auxiliar opcional (logout via consola)
+  window.__logout = () => signOut(_auth);
 }

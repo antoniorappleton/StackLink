@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="StackLink - Gestor de Links Pessoal">
+    <meta name="theme-color" content="#0f172a">
+    <title>StackLink</title>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/assets/icon-192.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Scripts (Modules) -->
+    <script type="module" src="js/app.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Auth Screen (Hidden by default or toggled via JS) -->
+        <section id="auth-screen" class="hidden">
+            <div class="auth-card glass">
+                <h1>StackLink</h1>
+                <p>O seu cofre de links pessoal.</p>
+                <button id="login-btn" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12.545 10.239v3.821h5.445c-.712 2.315-2.647 3.972-5.445 3.972c-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866.549 3.921 1.453l2.814-2.814C17.503 2.988 15.139 2 12.545 2C7.021 2 2.543 6.477 2.543 12s4.478 10 10.002 10c8.396 0 10.249-7.85 9.426-11.748l-9.426-.013z"/></svg>
+                    Entrar com Google
+                </button>
+            </div>
+        </section>
+
+        <!-- Main App (Hidden until auth) -->
+        <div id="main-app" class="hidden">
+            <header class="app-header glass">
+                <div class="logo">
+                    <span class="icon">🔗</span>
+                    <span class="text">StackLink</span>
+                </div>
+                <div class="user-profile">
+                    <!-- User Avatar injected here -->
+                    <button id="logout-btn" class="btn-icon" title="Sair">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                    </button>
+                </div>
+            </header>
+
+            <main>
+                <section class="controls-section">
+                    <div class="search-bar glass">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="16.65" y2="16.65"/></svg>
+                        <input type="text" id="search-input" placeholder="Pesquisar links...">
+                    </div>
+                    <div class="actions">
+                        <button id="add-link-btn" class="btn btn-primary">+ Novo Link</button>
+                        <button id="add-category-btn" class="btn btn-secondary">+ Categoria</button>
+                    </div>
+                </section>
+
+                <section class="categories-section" id="categories-container">
+                    <!-- Categories chips injected here -->
+                    <button class="chip active" data-id="all">Todos</button>
+                    <button class="chip" data-id="favorites">★ Favoritos</button>
+                </section>
+
+                <section class="links-grid" id="links-container">
+                    <!-- Link cards injected here -->
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <dialog id="link-dialog" class="glass-dialog">
+        <form method="dialog" id="link-form">
+            <h2>Novo Link</h2>
+            <div class="form-group">
+                <label for="link-url">URL</label>
+                <input type="url" id="link-url" required placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label for="link-title">Título</label>
+                <input type="text" id="link-title" required placeholder="Ex: Documentação Firebase">
+            </div>
+            <div class="form-group">
+                <label for="link-category">Categoria</label>
+                <select id="link-category">
+                    <option value="">Sem categoria</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-ghost" onclick="this.closest('dialog').close()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="category-dialog" class="glass-dialog">
+        <form method="dialog" id="category-form">
+            <h2>Nova Categoria</h2>
+            <div class="form-group">
+                <label for="cat-name">Nome</label>
+                <input type="text" id="cat-name" required placeholder="Ex: Design, Dev...">
+            </div>
+            <div class="form-group">
+                <label for="cat-color">Cor</label>
+                <input type="color" id="cat-color" value="#3b82f6">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-ghost" onclick="this.closest('dialog').close()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </form>
+    </dialog>
+
+</body>
+</html>

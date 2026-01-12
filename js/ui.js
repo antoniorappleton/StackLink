@@ -93,6 +93,7 @@ const setupEventListeners = () => {
 
     editingCategoryId = activeCategory;
     document.getElementById("cat-name").value = cat.name;
+    document.getElementById("cat-icon").value = cat.icon || "";
     document.getElementById("cat-color").value = cat.color;
     document.querySelector("#category-dialog h2").textContent =
       "Editar Categoria";
@@ -125,9 +126,10 @@ const handleLinkSubmit = async (e) => {
   const linkData = {
     url: document.getElementById("link-url").value,
     title: document.getElementById("link-title").value,
+    description: document.getElementById("link-description").value || "",
     categoryId: document.getElementById("link-category").value || null,
-    description: "", // Optional: add description field later
-    tags: [], // Optional: add tags logic later
+    icon: document.getElementById("link-icon").value || null,
+    tags: [],
     // favorite: preserve if editing, else false
   };
 
@@ -152,13 +154,20 @@ const handleLinkSubmit = async (e) => {
 const handleCategorySubmit = async (e) => {
   e.preventDefault();
   const name = document.getElementById("cat-name").value;
+  const icon = document.getElementById("cat-icon").value || null;
   const color = document.getElementById("cat-color").value;
 
   try {
     if (editingCategoryId) {
-      await updateCategory(currentUser.uid, editingCategoryId, name, color);
+      await updateCategory(
+        currentUser.uid,
+        editingCategoryId,
+        name,
+        icon,
+        color
+      );
     } else {
-      await addCategory(currentUser.uid, name, color);
+      await addCategory(currentUser.uid, name, icon, color);
     }
     categoryDialog.close();
     categoryForm.reset();
@@ -188,7 +197,10 @@ const handleLinkActions = async (e) => {
       editingLinkId = linkId;
       document.getElementById("link-url").value = link.url;
       document.getElementById("link-title").value = link.title;
+      document.getElementById("link-description").value =
+        link.description || "";
       document.getElementById("link-category").value = link.categoryId || "";
+      document.getElementById("link-icon").value = link.icon || "";
       document.querySelector("#link-dialog h2").textContent = "Editar Link";
       linkDialog.showModal();
     }
@@ -259,12 +271,11 @@ const renderCategories = () => {
   categories.forEach((cat) => {
     const isActive = activeCategory === cat.id ? "active" : "";
     const count = counts[cat.id] || 0;
-    // const style = `border-color: ${cat.color}; color: ${isActive ? '#fff' : cat.color}; background: ${isActive ? cat.color : 'transparent'}`;
-    // Moving to class-based styling mostly, using color for dot or border accent if needed
+    const iconHtml = cat.icon || getIcon(cat.name);
 
     html += `
         <button class="chip ${isActive}" data-id="${cat.id}">
-            ${getIcon(cat.name)}
+            ${iconHtml}
             ${cat.name}
             <span class="badge">${count}</span>
         </button>`;
@@ -316,12 +327,17 @@ const renderLinks = () => {
       const catName = category ? category.name : "Geral";
       const hostname = new URL(link.url).hostname;
 
+      // Use custom icon if available, otherwise default globe
+      const linkIcon =
+        link.icon ||
+        '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>';
+
       return `
         <div class="link-card">
             <div class="card-header">
                 <div class="card-header-left">
                     <div class="globe-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        ${linkIcon}
                     </div>
                     <div class="card-title-group">
                         <div class="card-title" title="${link.title}">${

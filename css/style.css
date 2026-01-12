@@ -507,7 +507,8 @@ dialog::backdrop {
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
     background: #27272a;
     border: 1px solid #3f3f46;
     padding: 0.8rem;
@@ -515,10 +516,12 @@ dialog::backdrop {
     color: white;
     font-family: var(--font-main);
     outline: none;
+    resize: vertical;
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group textarea:focus {
     border-color: var(--primary-color);
 }
 

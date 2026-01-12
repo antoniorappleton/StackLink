@@ -33,12 +33,12 @@ export const subscribeToCategories = (uid, onUpdate) => {
   });
 };
 
-export const addCategory = async (uid, name, color) => {
+export const addCategory = async (uid, name, icon, color) => {
   try {
     await addDoc(getCatsCol(uid), {
       name,
+      icon: icon || "📁",
       color,
-      icon: "📁", // Default icon for now
       createdAt: serverTimestamp(),
     });
   } catch (e) {
@@ -47,13 +47,13 @@ export const addCategory = async (uid, name, color) => {
   }
 };
 
-export const updateCategory = async (uid, catId, name, color) => {
+export const updateCategory = async (uid, catId, name, icon, color) => {
   try {
     const catRef = doc(db, `users/${uid}/categories/${catId}`);
-    await updateDoc(catRef, {
-      name,
-      color,
-    });
+    const updateData = { name, color };
+    if (icon !== null) updateData.icon = icon;
+
+    await updateDoc(catRef, updateData);
   } catch (e) {
     console.error("Error updating category: ", e);
     throw e;

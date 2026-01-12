@@ -233,7 +233,7 @@ const populateIconSelects = () => {
   const linkIconSelect = document.getElementById("link-icon");
   const catIconSelect = document.getElementById("cat-icon");
 
-  // Icon names with labels
+  // Icon names with clean labels (no emojis)
   const iconOptions = [
     { value: "link", label: "Link" },
     { value: "globe", label: "Globo" },
@@ -263,6 +263,40 @@ const populateIconSelects = () => {
     { value: "twitter", label: "Twitter" },
     { value: "shoppingCart", label: "Compras" },
     { value: "coffee", label: "Café" },
+    // News & Media
+    { value: "newspaper", label: "Notícias / Jornal" },
+    { value: "rss", label: "RSS / Feed" },
+    // Technology
+    { value: "smartphone", label: "Smartphone" },
+    { value: "monitor", label: "Monitor" },
+    { value: "laptop", label: "Laptop" },
+    { value: "wifi", label: "WiFi / Rede" },
+    { value: "cloud", label: "Cloud / Nuvem" },
+    // Entertainment
+    { value: "gamepad", label: "Gaming / Jogos" },
+    { value: "film", label: "Cinema / Filme" },
+    { value: "tv", label: "TV / Televisão" },
+    // Sports & Health
+    { value: "activity", label: "Atividade / Fitness" },
+    { value: "heart", label: "Saúde / Coração" },
+    // Travel
+    { value: "map", label: "Mapa" },
+    { value: "mapPin", label: "Localização" },
+    { value: "home", label: "Casa / Home" },
+    // Files
+    { value: "folder", label: "Pasta" },
+    { value: "file", label: "Arquivo" },
+    { value: "archive", label: "Arquivo / Backup" },
+    // Time
+    { value: "calendar", label: "Calendário" },
+    { value: "clock", label: "Relógio / Tempo" },
+    // Security
+    { value: "lock", label: "Segurança / Privado" },
+    { value: "shield", label: "Proteção / Shield" },
+    // Misc
+    { value: "award", label: "Prêmio / Conquista" },
+    { value: "gift", label: "Presente / Gift" },
+    { value: "bell", label: "Notificação / Alerta" },
   ];
 
   iconOptions.forEach((icon) => {

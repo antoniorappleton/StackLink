@@ -1,0 +1,41 @@
+Guia do StackLink PWA
+Visão Geral
+StackLink é uma aplicação Progressive Web App (PWA) para gerir os seus links favoritos de forma elegante e organizada.
+
+Funcionalidades Principais
+1. Autenticação
+Login seguro com conta Google.
+Cada utilizador tem o seu próprio espaço privado na nuvem (Firestore).
+
+2. Organização Visual
+Categorias Dinâmicas: Crie categorias (ex: "Trabalho", "Estudos") com cores personalizadas.
+Ícones Automáticos: O sistema tenta adivinhar o ícone da categoria baseado no nome (ex: "Tech" -> código, "News" -> jornal).
+Contadores: Veja quantos links existem em cada categoria.
+
+3. Gestão de Links
+Adicionar: Guarde URLs com título e associe a uma categoria.
+Editar: Corrigiu o link errado? Basta clicar no lápis no cartão do link.
+Favoritos: Marque links importantes com uma estrela para acesso rápido na aba "Favoritos".
+Abrir: Botão de ação rápida para visitar o link.
+Apagar: Remova links que já não precisa.
+
+4. Filtros e Pesquisa
+Barra de Pesquisa: Encontre qualquer link pelo título ou URL instantaneamente.
+Navegação por Categoria: Clique nos "Chips" no topo para filtrar a lista.
+
+5. Instalação (PWA)
+Android/iOS: Abra no navegador e selecione "Adicionar ao Ecrã Principal" (Add to Home Screen).
+Desktop (Chrome/Edge): Clique no ícone de instalação na barra de endereço.
+A app funciona como uma aplicação nativa, sem barra de navegador e em ecrã inteiro.
+Notas Técnicas
+
+Offline: A app funciona offline para consulta (cache da interface), mas requer internet para sincronizar dados novos (Firestore).
+
+Tema: Design "Dark Elegant" otimizado para não cansar a vista.
+
+Como Executar
+Certifique-se que o arquivo 
+js/firebase-config.js
+ tem as credenciais corretas.
+Sirva a pasta do projeto com um servidor local (ex: Live Server do VS Code).
+Abra localhost no navegador.

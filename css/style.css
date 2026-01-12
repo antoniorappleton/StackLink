@@ -576,3 +576,108 @@ dialog::backdrop {
         grid-template-columns: 1fr;
     }
 }
+
+/* --- Compact View Mode --- */
+.links-grid.compact-view {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.8rem;
+}
+
+.links-grid.compact-view .link-card {
+    padding: 0.8rem;
+    min-height: auto;
+}
+
+.links-grid.compact-view .card-header {
+    margin-bottom: 0.5rem;
+}
+
+.links-grid.compact-view .card-body,
+.links-grid.compact-view .card-footer {
+    display: none;
+}
+
+.links-grid.compact-view .globe-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.links-grid.compact-view .card-title {
+    font-size: 0.95rem;
+}
+
+.links-grid.compact-view .card-actions-top {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.links-grid.compact-view .link-card:hover .card-actions-top {
+    opacity: 1;
+}
+
+/* Button style for toggle view */
+.btn-icon-soft {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon-soft:hover {
+    background: var(--card-bg-hover);
+    color: var(--text-main);
+}
+
+/* Header Open Btn - logic */
+.header-open-btn {
+    display: none;
+    /* Hidden by default in expanded view */
+    color: var(--text-secondary);
+    padding: 0.25rem;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+    margin-left: 0.25rem;
+}
+
+.header-open-btn:hover {
+    color: var(--primary-color);
+    background: var(--card-bg-hover);
+}
+
+/* In compact view, show header open btn */
+.links-grid.compact-view .header-open-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- Card Collapse State (Single Card) --- */
+.link-card.collapsed .card-body {
+    display: none;
+}
+
+/* Also hide the category tag on collapse to save space */
+.link-card.collapsed .card-category {
+    display: none;
+}
+
+.link-card.collapsed .card-footer {
+    padding-top: 0;
+    border-top: none;
+    margin-top: 0;
+}
+
+.link-card.collapsed .icon-shrink {
+    display: none;
+}
+
+.link-card.collapsed .icon-expand {
+    display: block !important;
+    /* Override .hidden utility */
+}

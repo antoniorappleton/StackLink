@@ -16,6 +16,7 @@ let currentUser = null;
 let categories = [];
 let links = [];
 let activeCategory = "all";
+let isCompactView = localStorage.getItem("stacklink_view_mode") === "compact";
 
 // Track editing state
 let editingLinkId = null;
@@ -36,6 +37,7 @@ const categoryForm = document.getElementById("category-form");
 // Buttons
 const addLinkBtn = document.getElementById("add-link-btn");
 const addCategoryBtn = document.getElementById("add-category-btn");
+const toggleViewBtn = document.getElementById("toggle-view-btn");
 
 // Create Edit Category Button (inserted dynamically)
 const editCategoryBtn = document.createElement("button");
@@ -76,6 +78,10 @@ export const initUI = (user) => {
 
 const setupEventListeners = () => {
   // Dialog Triggers
+  if (toggleViewBtn) {
+    toggleViewBtn.addEventListener("click", handleViewToggle);
+  }
+
   addLinkBtn.addEventListener("click", () => {
     editingLinkId = null;
     linkForm.reset();
@@ -210,7 +216,22 @@ const handleLinkActions = async (e) => {
       document.getElementById("link-icon").value = link.icon || "";
       document.querySelector("#link-dialog h2").textContent = "Editar Link";
       linkDialog.showModal();
+      linkDialog.showModal();
     }
+  } else if (btn.classList.contains("toggle-size-btn")) {
+    const card = btn.closest(".link-card");
+    card.classList.toggle("collapsed");
+  }
+};
+
+const handleViewToggle = () => {
+  isCompactView = !isCompactView;
+  if (isCompactView) {
+    linksContainer.classList.add("compact-view");
+    localStorage.setItem("stacklink_view_mode", "compact");
+  } else {
+    linksContainer.classList.remove("compact-view");
+    localStorage.setItem("stacklink_view_mode", "expanded");
   }
 };
 
@@ -469,6 +490,24 @@ const renderLinks = () => {
                       link.id
                     }" title="Apagar">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                    <button class="toggle-size-btn btn-icon" data-id="${
+                      link.id
+                    }" title="Expandir/Encolher">
+                        <!-- Icon Shrink (Default: Arrows In) -->
+                        <svg class="icon-shrink" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="4 14 10 14 10 20"></polyline>
+                            <polyline points="20 10 14 10 14 4"></polyline>
+                            <line x1="14" y1="10" x2="21" y2="3"></line>
+                            <line x1="3" y1="21" x2="10" y2="14"></line>
+                        </svg>
+                        <!-- Icon Expand (Collapsed: Arrows Out) -->
+                        <svg class="icon-expand hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <polyline points="9 21 3 21 3 15"></polyline>
+                            <line x1="21" y1="3" x2="14" y2="10"></line>
+                            <line x1="3" y1="21" x2="10" y2="14"></line>
+                        </svg>
                     </button>
                 </div>
             </div>

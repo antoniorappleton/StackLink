@@ -383,10 +383,11 @@ const renderLinks = () => {
       const catName = category ? category.name : "Geral";
       const hostname = new URL(link.url).hostname;
 
-      // Use custom icon if available, otherwise default globe
+      // Use icon from library if it's a key, otherwise use as-is, or default globe
       const linkIcon =
-        link.icon ||
-        '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>';
+        link.icon && ICONS[link.icon]
+          ? ICONS[link.icon]
+          : link.icon || ICONS.globe;
 
       return `
         <div class="link-card">

@@ -9,6 +9,7 @@ import {
   deleteLink,
   toggleFavorite,
 } from "./db.js";
+import { ICONS } from "./icons.js";
 
 // State
 let currentUser = null;
@@ -67,6 +68,9 @@ export const initUI = (user) => {
 
   // Event Listeners
   setupEventListeners();
+
+  // Populate icon selects
+  populateIconSelects();
 };
 
 const setupEventListeners = () => {
@@ -74,6 +78,7 @@ const setupEventListeners = () => {
   addLinkBtn.addEventListener("click", () => {
     editingLinkId = null;
     linkForm.reset();
+    document.getElementById("link-icon").value = ""; // Reset icon
     document.querySelector("#link-dialog h2").textContent = "Novo Link";
     linkDialog.showModal();
   });
@@ -81,6 +86,7 @@ const setupEventListeners = () => {
   addCategoryBtn.addEventListener("click", () => {
     editingCategoryId = null;
     categoryForm.reset();
+    document.getElementById("cat-icon").value = ""; // Reset icon
     document.querySelector("#category-dialog h2").textContent =
       "Nova Categoria";
     categoryDialog.showModal();
@@ -222,6 +228,51 @@ const updateEditCategoryBtnVisibility = () => {
   }
 };
 
+// Populate icon select dropdowns
+const populateIconSelects = () => {
+  const linkIconSelect = document.getElementById("link-icon");
+  const catIconSelect = document.getElementById("cat-icon");
+
+  // Icon names with labels
+  const iconOptions = [
+    { value: "link", label: "🔗 Link" },
+    { value: "globe", label: "🌐 Globo" },
+    { value: "bookmark", label: "📑 Marcador" },
+    { value: "star", label: "⭐ Estrela" },
+    { value: "code", label: "💻 Código" },
+    { value: "terminal", label: "⌨️ Terminal" },
+    { value: "database", label: "🗄️ Database" },
+    { value: "book", label: "📚 Livro" },
+    { value: "fileText", label: "📄 Documento" },
+    { value: "graduation", label: "🎓 Graduação" },
+    { value: "image", label: "🖼️ Imagem" },
+    { value: "video", label: "🎬 Vídeo" },
+    { value: "music", label: "🎵 Música" },
+    { value: "palette", label: "🎨 Paleta" },
+    { value: "mail", label: "✉️ Email" },
+    { value: "messageCircle", label: "💬 Mensagem" },
+    { value: "briefcase", label: "💼 Negócios" },
+    { value: "dollarSign", label: "💰 Dinheiro" },
+    { value: "trendingUp", label: "📈 Crescimento" },
+    { value: "settings", label: "⚙️ Configurações" },
+    { value: "tool", label: "🔧 Ferramenta" },
+    { value: "search", label: "🔍 Pesquisa" },
+    { value: "youtube", label: "▶️ YouTube" },
+    { value: "github", label: "🐙 GitHub" },
+    { value: "twitter", label: "🐦 Twitter" },
+    { value: "shoppingCart", label: "🛒 Carrinho" },
+    { value: "coffee", label: "☕ Café" },
+  ];
+
+  iconOptions.forEach((icon) => {
+    const option = document.createElement("option");
+    option.value = icon.value;
+    option.textContent = icon.label;
+    linkIconSelect.appendChild(option.cloneNode(true));
+    catIconSelect.appendChild(option);
+  });
+};
+
 // --- Renderers ---
 
 const renderCategories = () => {
@@ -271,7 +322,11 @@ const renderCategories = () => {
   categories.forEach((cat) => {
     const isActive = activeCategory === cat.id ? "active" : "";
     const count = counts[cat.id] || 0;
-    const iconHtml = cat.icon || getIcon(cat.name);
+    // Use icon from library if it's a key, otherwise use as-is (for custom SVG/emoji)
+    const iconHtml =
+      cat.icon && ICONS[cat.icon]
+        ? ICONS[cat.icon]
+        : cat.icon || getIcon(cat.name);
 
     html += `
         <button class="chip ${isActive}" data-id="${cat.id}">

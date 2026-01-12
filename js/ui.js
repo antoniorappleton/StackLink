@@ -74,12 +74,21 @@ export const initUI = (user) => {
 
   // Populate icon selects
   populateIconSelects();
+
+  // Init Theme
+  initTheme();
 };
 
 const setupEventListeners = () => {
   // Dialog Triggers
   if (toggleViewBtn) {
     toggleViewBtn.addEventListener("click", handleViewToggle);
+  }
+
+  // Theme Toggle
+  const themeToggleBtn = document.getElementById("theme-toggle-btn");
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener("click", handleThemeToggle);
   }
 
   addLinkBtn.addEventListener("click", () => {
@@ -233,6 +242,38 @@ const handleViewToggle = () => {
     linksContainer.classList.remove("compact-view");
     localStorage.setItem("stacklink_view_mode", "expanded");
   }
+};
+
+const handleThemeToggle = () => {
+  const currentTheme = document.documentElement.getAttribute("data-theme");
+  const newTheme = currentTheme === "light" ? "dark" : "light";
+
+  document.documentElement.setAttribute("data-theme", newTheme);
+  localStorage.setItem("stacklink_theme", newTheme);
+
+  updateThemeIcon(newTheme);
+};
+
+const updateThemeIcon = (theme) => {
+  const btn = document.getElementById("theme-toggle-btn");
+  if (!btn) return;
+  const sun = btn.querySelector(".icon-sun");
+  const moon = btn.querySelector(".icon-moon");
+
+  if (theme === "light") {
+    sun.classList.add("hidden");
+    moon.classList.remove("hidden");
+  } else {
+    sun.classList.remove("hidden");
+    moon.classList.add("hidden");
+  }
+};
+
+// Init Theme on load (called manually or inside initUI)
+export const initTheme = () => {
+  const savedTheme = localStorage.getItem("stacklink_theme") || "dark";
+  document.documentElement.setAttribute("data-theme", savedTheme);
+  updateThemeIcon(savedTheme);
 };
 
 const setActiveCategory = (id) => {

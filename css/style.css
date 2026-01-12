@@ -26,6 +26,27 @@
     --font-main: 'Outfit', sans-serif;
 }
 
+[data-theme="light"] {
+    --bg-color: #f8fafc;
+    /* Slate 50 */
+    --card-bg: #ffffff;
+    --card-hover: #f1f5f9;
+    /* Slate 100 */
+    --primary-color: #2563eb;
+    /* Keep Blue */
+    --primary-hover: #1d4ed8;
+    --text-primary: #0f172a;
+    /* Slate 900 */
+    --text-secondary: #64748b;
+    /* Slate 500 */
+    --border-color: #e2e8f0;
+    /* Slate 200 */
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(0, 0, 0, 0.05);
+    /* For gradient bg override */
+    --bg-gradient-start: #e2e8f0;
+}
+
 * {
     margin: 0;
     padding: 0;

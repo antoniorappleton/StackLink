@@ -63,6 +63,7 @@ export const initUI = (user) => {
 
   subscribeToLinks(user.uid, (newLinks) => {
     links = newLinks;
+    renderCategories(); // Update category badges with new counts
     renderLinks();
   });
 

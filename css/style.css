@@ -183,6 +183,24 @@ body {
     gap: 10px;
 }
 
+/* Install Button */
+.install-prompt {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7);
+    }
+
+    50% {
+        box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+    }
+}
+
+
 /* --- Controls (Search & Add) --- */
 .controls-section {
     display: flex;

@@ -1,4 +1,4 @@
-const CACHE_NAME = "stacklink-v1";
+const CACHE_NAME = "stacklink-v2";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",

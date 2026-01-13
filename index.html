@@ -190,11 +190,47 @@
             </div>
           </section>
 
-          <section class="categories-section" id="categories-container">
-            <!-- Categories chips injected here -->
-            <button class="chip active" data-id="all">Todos</button>
-            <button class="chip" data-id="favorites">★ Favoritos</button>
-          </section>
+          <div class="categories-wrapper">
+            <section class="categories-section" id="categories-container">
+              <!-- Categories chips injected here -->
+              <button class="chip active" data-id="all">Todos</button>
+              <button class="chip" data-id="favorites">★ Favoritos</button>
+            </section>
+            <button
+              id="expand-cats-btn"
+              class="btn-icon-soft"
+              title="Expandir Categorias"
+            >
+              <svg
+                class="icon-down"
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+              <svg
+                class="icon-up hidden"
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </button>
+          </div>
 
           <section class="links-grid" id="links-container">
             <!-- Link cards injected here -->

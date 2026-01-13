@@ -38,6 +38,7 @@ const categoryForm = document.getElementById("category-form");
 const addLinkBtn = document.getElementById("add-link-btn");
 const addCategoryBtn = document.getElementById("add-category-btn");
 const toggleViewBtn = document.getElementById("toggle-view-btn");
+const expandCatsBtn = document.getElementById("expand-cats-btn");
 
 // Create Edit Category Button (inserted dynamically)
 const editCategoryBtn = document.createElement("button");
@@ -83,6 +84,25 @@ const setupEventListeners = () => {
   // Dialog Triggers
   if (toggleViewBtn) {
     toggleViewBtn.addEventListener("click", handleViewToggle);
+  }
+
+  // Categories Expand Toggle
+  if (expandCatsBtn) {
+    expandCatsBtn.addEventListener("click", () => {
+      categoriesContainer.classList.toggle("expanded");
+      // Toggle icons
+      const down = expandCatsBtn.querySelector(".icon-down");
+      const up = expandCatsBtn.querySelector(".icon-up");
+      if (categoriesContainer.classList.contains("expanded")) {
+        down.classList.add("hidden");
+        up.classList.remove("hidden");
+        expandCatsBtn.title = "Recolher Categorias";
+      } else {
+        down.classList.remove("hidden");
+        up.classList.add("hidden");
+        expandCatsBtn.title = "Expandir Categorias";
+      }
+    });
   }
 
   // Theme Toggle

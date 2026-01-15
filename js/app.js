@@ -1,6 +1,7 @@
 import "./firebase-init.js";
 import { auth, onAuthStateChanged } from "./auth.js";
 import { initUI } from "./ui.js";
+import { Settings } from "./settings.js";
 
 // Register Service Worker
 if ("serviceWorker" in navigator) {
@@ -98,6 +99,7 @@ onAuthStateChanged(auth, (user) => {
 
     // Initialize UI with user context
     initUI(user);
+    new Settings();
   } else {
     // User is signed out
     console.log("User not authenticated");

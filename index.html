@@ -70,6 +70,27 @@
             <span class="text">StackLink</span>
           </div>
           <div class="user-profile">
+            <!-- Settings Button -->
+            <button
+              id="settings-btn"
+              class="btn-icon"
+              title="Definições"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button> 
             <button
               id="theme-toggle-btn"
               class="btn-icon"
@@ -322,6 +343,72 @@
           <button type="submit" class="btn btn-primary">Salvar</button>
         </div>
       </form>
+    </dialog>
+
+    <dialog id="settings-dialog" class="glass-dialog">
+        <form method="dialog" id="settings-form">
+            <h2>Personalização</h2>
+            
+            <div class="settings-section">
+                <h3>Fundo</h3>
+                <div class="form-group">
+                    <label>Tipo de Fundo</label>
+                    <div class="radio-group" id="bg-type-group">
+                        <label class="radio-option">
+                            <input type="radio" name="bg-type" value="solid" checked>
+                            <span>Sólido</span>
+                        </label>
+                         <label class="radio-option">
+                            <input type="radio" name="bg-type" value="gradient">
+                            <span>Gradiente</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="bg-type" value="mesh">
+                            <span>Mesh</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>Aparência</h3>
+                <div class="form-group">
+                    <label for="glass-opacity">Opacidade dos Cartões (<span id="opacity-value">80%</span>)</label>
+                    <input type="range" id="glass-opacity" min="0" max="100" value="80">
+                </div>
+                 <div class="form-group">
+                    <label for="blur-strength">Desfoque do Vidro (<span id="blur-value">12px</span>)</label>
+                    <input type="range" id="blur-strength" min="0" max="40" value="12">
+                </div>
+            </div>
+
+             <div class="settings-section">
+                <h3>Cores</h3>
+                <div class="form-group">
+                    <label for="primary-color-picker">Cor de Destaque (Primária)</label>
+                    <div class="color-picker-wrapper">
+                         <input type="color" id="primary-color-picker" value="#3b82f6">
+                         <span class="color-preview"></span>
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label for="secondary-color-picker">Cor Secundária (Fundo)</label>
+                    <div class="color-picker-wrapper">
+                         <input type="color" id="secondary-color-picker" value="#a855f7">
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label for="text-color-picker">Cor do Texto</label>
+                    <div class="color-picker-wrapper">
+                         <input type="color" id="text-color-picker" value="#f4f4f5">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary" onclick="this.closest('dialog').close()">Concluído</button>
+            </div>
+        </form>
     </dialog>
   </body>
 </html>

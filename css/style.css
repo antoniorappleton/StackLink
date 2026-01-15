@@ -16,7 +16,11 @@
     /* Zinc 400 */
     --border-color: #27272a;
     /* Zinc 800 */
-    --glass-bg: rgba(24, 24, 27, 0.7);
+    
+    /* Variable Glass Settings */
+    --glass-opacity: 0.8;
+    --glass-blur: 12px;
+    --glass-bg: rgba(24, 24, 27, var(--glass-opacity));
     --glass-border: rgba(255, 255, 255, 0.05);
 
     --radius-sm: 8px;
@@ -92,7 +96,7 @@ body {
 
 .btn-primary {
     background-color: var(--primary-color);
-    color: white;
+    color: var(--text-primary);
 }
 
 .btn-primary:hover {
@@ -138,8 +142,8 @@ body {
 
 .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
 }
 
@@ -252,11 +256,24 @@ body {
 .search-bar input {
     background: transparent;
     border: none;
-    color: white;
+    color: var(--text-primary);
     width: 100%;
     outline: none;
     font-family: var(--font-main);
     font-size: 1rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    background: #27272a;
+    border: 1px solid #3f3f46;
+    padding: 0.8rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    outline: none;
+    resize: vertical;
 }
 
 .actions {
@@ -361,9 +378,10 @@ body {
 }
 
 .link-card {
-    background: var(--card-bg);
-    /* Opaque bg for performance */
-    border: 1px solid var(--border-color);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
     padding: 1.25rem;
     display: flex;
@@ -443,7 +461,8 @@ body {
 }
 
 .card-desc {
-    color: var(--text-secondary);
+    color: var(--text-primary);
+    opacity: 0.7;
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
     display: -webkit-box;
@@ -570,7 +589,7 @@ dialog::backdrop {
     border: 1px solid #3f3f46;
     padding: 0.8rem;
     border-radius: var(--radius-sm);
-    color: white;
+    color: var(--text-primary);
     font-family: var(--font-main);
     outline: none;
     resize: vertical;
@@ -725,11 +744,127 @@ dialog::backdrop {
     margin-top: 0;
 }
 
-.link-card.collapsed .icon-shrink {
-    display: none;
-}
-
 .link-card.collapsed .icon-expand {
     display: block !important;
     /* Override .hidden utility */
+}
+
+/* --- Settings Dialog Specifics --- */
+.settings-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.settings-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.settings-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Radio Group */
+.radio-group {
+    display: flex;
+    gap: 10px;
+}
+
+.radio-option {
+    flex: 1;
+    position: relative;
+    cursor: pointer;
+}
+
+.radio-option input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.radio-option span {
+    display: block;
+    text-align: center;
+    padding: 0.8rem;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.radio-option input:checked + span {
+    border-color: var(--primary-color);
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+/* Range Inputs */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    background: transparent;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    background: var(--card-hover);
+    border-radius: 10px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    margin-top: -7px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    border: 2px solid var(--bg-color);
+    transition: transform 0.1s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+/* Color Picker */
+.color-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+input[type="color"] {
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
 }

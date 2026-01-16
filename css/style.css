@@ -20,7 +20,10 @@
     /* Variable Glass Settings */
     --glass-opacity: 0.8;
     --glass-blur: 12px;
-    --glass-bg: rgba(24, 24, 27, var(--glass-opacity));
+    --glass-r: 24;
+    --glass-g: 24;
+    --glass-b: 27;
+    --glass-bg: rgba(var(--glass-r), var(--glass-g), var(--glass-b), var(--glass-opacity));
     --glass-border: rgba(255, 255, 255, 0.05);
 
     --radius-sm: 8px;

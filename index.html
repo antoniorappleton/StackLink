@@ -350,6 +350,7 @@
             <h2>Personalização</h2>
             
             <div class="settings-section">
+            <div class="settings-section">
                 <h3>Fundo</h3>
                 <div class="form-group">
                     <label>Tipo de Fundo</label>
@@ -368,10 +369,22 @@
                         </label>
                     </div>
                 </div>
+                 <div class="form-group">
+                    <label for="bg-color-picker">Cor do Fundo (Sólido)</label>
+                    <div class="color-picker-wrapper">
+                         <input type="color" id="bg-color-picker" value="#09090b">
+                    </div>
+                </div>
             </div>
 
             <div class="settings-section">
                 <h3>Aparência</h3>
+                <div class="form-group">
+                    <label for="card-bg-picker">Cor Base dos Cartões</label>
+                    <div class="color-picker-wrapper">
+                         <input type="color" id="card-bg-picker" value="#18181b">
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="glass-opacity">Opacidade dos Cartões (<span id="opacity-value">80%</span>)</label>
                     <input type="range" id="glass-opacity" min="0" max="100" value="80">
@@ -398,9 +411,15 @@
                     </div>
                 </div>
                  <div class="form-group">
-                    <label for="text-color-picker">Cor do Texto</label>
+                    <label for="text-color-picker">Cor do Texto Principal</label>
                     <div class="color-picker-wrapper">
                          <input type="color" id="text-color-picker" value="#f4f4f5">
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label for="text-sec-color-picker">Cor do Texto Secundário</label>
+                    <div class="color-picker-wrapper">
+                         <input type="color" id="text-sec-color-picker" value="#a1a1aa">
                     </div>
                 </div>
             </div>

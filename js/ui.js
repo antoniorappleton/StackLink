@@ -206,7 +206,7 @@ const handleCategorySubmit = async (e) => {
         editingCategoryId,
         name,
         icon,
-        color
+        color,
       );
     } else {
       await addCategory(currentUser.uid, name, icon, color);
@@ -220,20 +220,37 @@ const handleCategorySubmit = async (e) => {
 
 const handleLinkActions = async (e) => {
   const btn = e.target.closest("button");
+  const linkCard = e.target.closest(".link-card");
+
+  // If clicking on a link (anchor tag), let default behavior happen
+  if (e.target.closest("a")) return;
+
+  // Handle Card Click (Open Link)
+  if (linkCard && !btn) {
+    const url = linkCard.dataset.url;
+    if (url) {
+      window.open(url, "_blank");
+    }
+    return;
+  }
+
   if (!btn) return;
 
   const linkId = btn.dataset.id;
 
   if (btn.classList.contains("trash-btn")) {
+    e.stopPropagation(); // Prevent card click
     if (confirm("Tem a certeza que deseja apagar este link?")) {
       await deleteLink(currentUser.uid, linkId);
     }
   } else if (btn.classList.contains("fav-btn")) {
+    e.stopPropagation();
     const link = links.find((l) => l.id === linkId);
     if (link) {
       await toggleFavorite(currentUser.uid, linkId, link.favorite);
     }
   } else if (btn.classList.contains("edit-btn")) {
+    e.stopPropagation();
     const link = links.find((l) => l.id === linkId);
     if (link) {
       editingLinkId = linkId;
@@ -245,11 +262,25 @@ const handleLinkActions = async (e) => {
       document.getElementById("link-icon").value = link.icon || "";
       document.querySelector("#link-dialog h2").textContent = "Editar Link";
       linkDialog.showModal();
-      linkDialog.showModal();
     }
-  } else if (btn.classList.contains("toggle-size-btn")) {
-    const card = btn.closest(".link-card");
-    card.classList.toggle("collapsed");
+  } else if (btn.classList.contains("copy-btn")) {
+    e.stopPropagation();
+    const url = btn.dataset.url;
+    if (url) {
+      try {
+        await navigator.clipboard.writeText(url);
+        // Visual feedback
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #4ade80;"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        setTimeout(() => {
+          btn.innerHTML = originalHtml;
+        }, 2000);
+      } catch (err) {
+        console.error("Failed to copy: ", err);
+        alert("Falha ao copiar link");
+      }
+    }
   }
 };
 
@@ -403,7 +434,7 @@ const renderCategories = () => {
         acc[link.categoryId] = (acc[link.categoryId] || 0) + 1;
       return acc;
     },
-    { all: 0, favorites: 0 }
+    { all: 0, favorites: 0 },
   );
 
   const getIcon = (name) => {
@@ -507,7 +538,7 @@ const renderLinks = () => {
           : link.icon || ICONS.globe;
 
       return `
-        <div class="link-card">
+        <div class="link-card" data-url="${link.url}">
             <div class="card-header">
                 <div class="card-header-left">
                     <div class="globe-icon">
@@ -515,8 +546,8 @@ const renderLinks = () => {
                     </div>
                     <div class="card-title-group">
                         <div class="card-title" title="${link.title}">${
-        link.title
-      }</div>
+                          link.title
+                        }</div>
                     </div>
                 </div>
                 <button class="fav-btn ${
@@ -538,6 +569,14 @@ const renderLinks = () => {
             <div class="card-footer">
                 <span class="card-category">${catName}</span>
                 <div class="card-actions">
+                    <button class="copy-btn btn-icon" data-url="${
+                      link.url
+                    }" title="Copiar Link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    </button>
                     <a href="${link.url}" target="_blank" class="btn-open">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
                         Abrir
@@ -551,24 +590,6 @@ const renderLinks = () => {
                       link.id
                     }" title="Apagar">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                    </button>
-                    <button class="toggle-size-btn btn-icon" data-id="${
-                      link.id
-                    }" title="Expandir/Encolher">
-                        <!-- Icon Shrink (Default: Arrows In) -->
-                        <svg class="icon-shrink" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="4 14 10 14 10 20"></polyline>
-                            <polyline points="20 10 14 10 14 4"></polyline>
-                            <line x1="14" y1="10" x2="21" y2="3"></line>
-                            <line x1="3" y1="21" x2="10" y2="14"></line>
-                        </svg>
-                        <!-- Icon Expand (Collapsed: Arrows Out) -->
-                        <svg class="icon-expand hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="15 3 21 3 21 9"></polyline>
-                            <polyline points="9 21 3 21 3 15"></polyline>
-                            <line x1="21" y1="3" x2="14" y2="10"></line>
-                            <line x1="3" y1="21" x2="10" y2="14"></line>
-                        </svg>
                     </button>
                 </div>
             </div>

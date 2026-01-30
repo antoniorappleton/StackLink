@@ -1,433 +1,311 @@
 <!DOCTYPE html>
 <html lang="pt">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="StackLink - Gestor de Links Pessoal" />
-    <meta name="theme-color" content="#0f172a" />
-    <title>StackLink</title>
 
-    <!-- PWA -->
-    <link rel="manifest" href="./manifest.json" />
-    <link rel="apple-touch-icon" href="./assets/icon-192.png" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="StackLink - Gestor de Links Pessoal" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>StackLink</title>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./assets/icon-192.png" />
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="css/style.css" />
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-    <!-- Scripts (Modules) -->
-    <script type="module" src="js/app.js"></script>
-  </head>
-  <body>
-    <div class="app-container">
-      <!-- Auth Screen (Hidden by default or toggled via JS) -->
-      <section id="auth-screen" class="hidden">
-        <div class="auth-card glass">
-          <h1>StackLink</h1>
-          <p>O seu cofre de links pessoal.</p>
-          <button id="login-btn" class="btn btn-primary">
-            <svg width="20" height="20" viewBox="0 0 24 24">
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Scripts (Modules) -->
+  <script type="module" src="js/app.js"></script>
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Auth Screen (Hidden by default or toggled via JS) -->
+    <section id="auth-screen" class="hidden">
+      <div class="auth-card glass">
+        <h1>StackLink</h1>
+        <p>O seu cofre de links pessoal.</p>
+        <button id="login-btn" class="btn btn-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="currentColor"
+              d="M12.545 10.239v3.821h5.445c-.712 2.315-2.647 3.972-5.445 3.972c-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866.549 3.921 1.453l2.814-2.814C17.503 2.988 15.139 2 12.545 2C7.021 2 2.543 6.477 2.543 12s4.478 10 10.002 10c8.396 0 10.249-7.85 9.426-11.748l-9.426-.013z" />
+          </svg>
+          Entrar com Google
+        </button>
+      </div>
+    </section>
+
+    <!-- Main App (Hidden until auth) -->
+    <div id="main-app" class="hidden">
+      <header class="app-header glass">
+        <div class="logo">
+          <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </svg>
+          <span class="text">StackLink</span>
+        </div>
+        <div class="user-profile">
+          <!-- Settings Button -->
+          <button id="settings-btn" class="btn-icon" title="Definições">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path
-                fill="currentColor"
-                d="M12.545 10.239v3.821h5.445c-.712 2.315-2.647 3.972-5.445 3.972c-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866.549 3.921 1.453l2.814-2.814C17.503 2.988 15.139 2 12.545 2C7.021 2 2.543 6.477 2.543 12s4.478 10 10.002 10c8.396 0 10.249-7.85 9.426-11.748l-9.426-.013z"
-              />
+                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
+              </path>
+              <circle cx="12" cy="12" r="3"></circle>
             </svg>
-            Entrar com Google
+          </button>
+          <button id="theme-toggle-btn" class="btn-icon" title="Alternar Tema">
+            <!-- Sun Icon (Default/Dark Mode) -->
+            <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+            <!-- Moon Icon (Light Mode - Hidden by default) -->
+            <svg class="icon-moon hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          </button>
+          <!-- User Avatar injected here -->
+          <button id="logout-btn" class="btn-icon" title="Sair">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" x2="9" y1="12" y2="12" />
+            </svg>
           </button>
         </div>
-      </section>
+      </header>
 
-      <!-- Main App (Hidden until auth) -->
-      <div id="main-app" class="hidden">
-        <header class="app-header glass">
-          <div class="logo">
-            <svg
-              class="logo-icon"
-              xmlns="http://www.w3.org/2000/svg"
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
-              />
-              <path
-                d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
-              />
+      <main>
+        <section class="controls-section">
+          <div class="search-bar glass">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" x2="16.65" y1="16.65" y2="16.65" />
             </svg>
-            <span class="text">StackLink</span>
+            <input type="text" id="search-input" placeholder="Pesquisar links..." />
           </div>
-          <div class="user-profile">
-            <!-- Settings Button -->
-            <button
-              id="settings-btn"
-              class="btn-icon"
-              title="Definições"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-            </button> 
-            <button
-              id="theme-toggle-btn"
-              class="btn-icon"
-              title="Alternar Tema"
-            >
-              <!-- Sun Icon (Default/Dark Mode) -->
-              <svg
-                class="icon-sun"
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="5" />
-                <line x1="12" y1="1" x2="12" y2="3" />
-                <line x1="12" y1="21" x2="12" y2="23" />
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                <line x1="1" y1="12" x2="3" y2="12" />
-                <line x1="21" y1="12" x2="23" y2="12" />
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-              </svg>
-              <!-- Moon Icon (Light Mode - Hidden by default) -->
-              <svg
-                class="icon-moon hidden"
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          <div class="actions">
+            <button id="toggle-view-btn" class="btn-icon-soft" title="Alternar Visualização">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
               </svg>
             </button>
-            <!-- User Avatar injected here -->
-            <button id="logout-btn" class="btn-icon" title="Sair">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" x2="9" y1="12" y2="12" />
-              </svg>
+            <button id="add-link-btn" class="btn btn-primary">
+              + Novo Link
+            </button>
+            <button id="add-category-btn" class="btn btn-secondary">
+              + Categoria
             </button>
           </div>
-        </header>
+        </section>
 
-        <main>
-          <section class="controls-section">
-            <div class="search-bar glass">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" x2="16.65" y1="16.65" y2="16.65" />
-              </svg>
-              <input
-                type="text"
-                id="search-input"
-                placeholder="Pesquisar links..."
-              />
-            </div>
-            <div class="actions">
-              <button
-                id="toggle-view-btn"
-                class="btn-icon-soft"
-                title="Alternar Visualização"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <rect x="3" y="3" width="7" height="7"></rect>
-                  <rect x="14" y="3" width="7" height="7"></rect>
-                  <rect x="14" y="14" width="7" height="7"></rect>
-                  <rect x="3" y="14" width="7" height="7"></rect>
-                </svg>
-              </button>
-              <button id="add-link-btn" class="btn btn-primary">
-                + Novo Link
-              </button>
-              <button id="add-category-btn" class="btn btn-secondary">
-                + Categoria
-              </button>
-            </div>
+        <div class="categories-wrapper">
+          <section class="categories-grid" id="categories-container">
+            <!-- Category Cards injected here -->
           </section>
+        </div>
 
-          <div class="categories-wrapper">
-            <section class="categories-section" id="categories-container">
-              <!-- Categories chips injected here -->
-              <button class="chip active" data-id="all">Todos</button>
-              <button class="chip" data-id="favorites">★ Favoritos</button>
-            </section>
-            <button
-              id="expand-cats-btn"
-              class="btn-icon-soft"
-              title="Expandir Categorias"
-            >
-              <svg
-                class="icon-down"
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-              <svg
-                class="icon-up hidden"
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <polyline points="18 15 12 9 6 15"></polyline>
-              </svg>
-            </button>
-          </div>
+        <!-- REMOVED: Old links-grid section from here -->
+      </main>
+    </div>
+  </div>
 
-          <section class="links-grid" id="links-container">
-            <!-- Link cards injected here -->
-          </section>
-        </main>
+  <!-- Modals -->
+  <!-- NEW: Category Links Modal -->
+  <dialog id="category-links-dialog" class="glass-dialog full-screen-dialog">
+    <div class="dialog-header">
+      <div class="header-content">
+        <span id="modal-category-icon" class="category-icon-large"></span>
+        <h2 id="modal-category-title">Categoria</h2>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn-icon" onclick="this.closest('dialog').close()" title="Fechar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
     </div>
 
-    <!-- Modals -->
-    <dialog id="link-dialog" class="glass-dialog">
-      <form method="dialog" id="link-form">
-        <h2>Novo Link</h2>
-        <div class="form-group">
-          <label for="link-url">URL</label>
-          <input type="url" id="link-url" required placeholder="https://..." />
+    <div class="dialog-body">
+      <section class="links-grid" id="modal-links-container">
+        <!-- Links injected here -->
+      </section>
+    </div>
+  </dialog>
+  <dialog id="link-dialog" class="glass-dialog">
+    <form method="dialog" id="link-form">
+      <h2>Novo Link</h2>
+      <div class="form-group">
+        <label for="link-url">URL</label>
+        <input type="url" id="link-url" required placeholder="https://..." />
+      </div>
+      <div class="form-group">
+        <label for="link-title">Título</label>
+        <input type="text" id="link-title" required placeholder="Ex: Documentação Firebase" />
+      </div>
+      <div class="form-group">
+        <label for="link-description">Descrição</label>
+        <textarea id="link-description" rows="3" placeholder="Breve descrição do link (opcional)"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="link-category">Categoria</label>
+        <select id="link-category">
+          <option value="">Sem categoria</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="link-icon">Ícone</label>
+        <select id="link-icon">
+          <option value="">Padrão (Globo)</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" onclick="this.closest('dialog').close()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="category-dialog" class="glass-dialog">
+    <form method="dialog" id="category-form">
+      <h2>Nova Categoria</h2>
+      <div class="form-group">
+        <label for="cat-name">Nome</label>
+        <input type="text" id="cat-name" required placeholder="Ex: Design, Dev..." />
+      </div>
+      <div class="form-group">
+        <label for="cat-icon">Ícone</label>
+        <select id="cat-icon">
+          <option value="">Padrão (Pasta)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="cat-color">Cor</label>
+        <input type="color" id="cat-color" value="#3b82f6" />
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" onclick="this.closest('dialog').close()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="settings-dialog" class="glass-dialog">
+    <form method="dialog" id="settings-form">
+      <h2>Personalização</h2>
+
+      <div class="settings-section">
+        <div class="settings-section">
+          <h3>Fundo</h3>
+          <div class="form-group">
+            <label>Tipo de Fundo</label>
+            <div class="radio-group" id="bg-type-group">
+              <label class="radio-option">
+                <input type="radio" name="bg-type" value="solid" checked>
+                <span>Sólido</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="bg-type" value="gradient">
+                <span>Gradiente</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="bg-type" value="mesh">
+                <span>Mesh</span>
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="bg-color-picker">Cor do Fundo (Sólido)</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="bg-color-picker" value="#09090b">
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="link-title">Título</label>
-          <input
-            type="text"
-            id="link-title"
-            required
-            placeholder="Ex: Documentação Firebase"
-          />
+
+        <div class="settings-section">
+          <h3>Aparência</h3>
+          <div class="form-group">
+            <label for="card-bg-picker">Cor Base dos Cartões</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="card-bg-picker" value="#18181b">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="glass-opacity">Opacidade dos Cartões (<span id="opacity-value">80%</span>)</label>
+            <input type="range" id="glass-opacity" min="0" max="100" value="80">
+          </div>
+          <div class="form-group">
+            <label for="blur-strength">Desfoque do Vidro (<span id="blur-value">12px</span>)</label>
+            <input type="range" id="blur-strength" min="0" max="40" value="12">
+          </div>
         </div>
-        <div class="form-group">
-          <label for="link-description">Descrição</label>
-          <textarea
-            id="link-description"
-            rows="3"
-            placeholder="Breve descrição do link (opcional)"
-          ></textarea>
+
+        <div class="settings-section">
+          <h3>Cores</h3>
+          <div class="form-group">
+            <label for="primary-color-picker">Cor de Destaque (Primária)</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="primary-color-picker" value="#3b82f6">
+              <span class="color-preview"></span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="secondary-color-picker">Cor Secundária (Fundo)</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="secondary-color-picker" value="#a855f7">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="text-color-picker">Cor do Texto Principal</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="text-color-picker" value="#f4f4f5">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="text-sec-color-picker">Cor do Texto Secundário</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="text-sec-color-picker" value="#a1a1aa">
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="link-category">Categoria</label>
-          <select id="link-category">
-            <option value="">Sem categoria</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="link-icon">Ícone</label>
-          <select id="link-icon">
-            <option value="">Padrão (Globo)</option>
-          </select>
-        </div>
+
         <div class="form-actions">
-          <button
-            type="button"
-            class="btn btn-ghost"
-            onclick="this.closest('dialog').close()"
-          >
-            Cancelar
-          </button>
-          <button type="submit" class="btn btn-primary">Salvar</button>
+          <button type="button" class="btn btn-primary" onclick="this.closest('dialog').close()">Concluído</button>
         </div>
-      </form>
-    </dialog>
+    </form>
+  </dialog>
+</body>
 
-    <dialog id="category-dialog" class="glass-dialog">
-      <form method="dialog" id="category-form">
-        <h2>Nova Categoria</h2>
-        <div class="form-group">
-          <label for="cat-name">Nome</label>
-          <input
-            type="text"
-            id="cat-name"
-            required
-            placeholder="Ex: Design, Dev..."
-          />
-        </div>
-        <div class="form-group">
-          <label for="cat-icon">Ícone</label>
-          <select id="cat-icon">
-            <option value="">Padrão (Pasta)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="cat-color">Cor</label>
-          <input type="color" id="cat-color" value="#3b82f6" />
-        </div>
-        <div class="form-actions">
-          <button
-            type="button"
-            class="btn btn-ghost"
-            onclick="this.closest('dialog').close()"
-          >
-            Cancelar
-          </button>
-          <button type="submit" class="btn btn-primary">Salvar</button>
-        </div>
-      </form>
-    </dialog>
-
-    <dialog id="settings-dialog" class="glass-dialog">
-        <form method="dialog" id="settings-form">
-            <h2>Personalização</h2>
-            
-            <div class="settings-section">
-            <div class="settings-section">
-                <h3>Fundo</h3>
-                <div class="form-group">
-                    <label>Tipo de Fundo</label>
-                    <div class="radio-group" id="bg-type-group">
-                        <label class="radio-option">
-                            <input type="radio" name="bg-type" value="solid" checked>
-                            <span>Sólido</span>
-                        </label>
-                         <label class="radio-option">
-                            <input type="radio" name="bg-type" value="gradient">
-                            <span>Gradiente</span>
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="bg-type" value="mesh">
-                            <span>Mesh</span>
-                        </label>
-                    </div>
-                </div>
-                 <div class="form-group">
-                    <label for="bg-color-picker">Cor do Fundo (Sólido)</label>
-                    <div class="color-picker-wrapper">
-                         <input type="color" id="bg-color-picker" value="#09090b">
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3>Aparência</h3>
-                <div class="form-group">
-                    <label for="card-bg-picker">Cor Base dos Cartões</label>
-                    <div class="color-picker-wrapper">
-                         <input type="color" id="card-bg-picker" value="#18181b">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="glass-opacity">Opacidade dos Cartões (<span id="opacity-value">80%</span>)</label>
-                    <input type="range" id="glass-opacity" min="0" max="100" value="80">
-                </div>
-                 <div class="form-group">
-                    <label for="blur-strength">Desfoque do Vidro (<span id="blur-value">12px</span>)</label>
-                    <input type="range" id="blur-strength" min="0" max="40" value="12">
-                </div>
-            </div>
-
-             <div class="settings-section">
-                <h3>Cores</h3>
-                <div class="form-group">
-                    <label for="primary-color-picker">Cor de Destaque (Primária)</label>
-                    <div class="color-picker-wrapper">
-                         <input type="color" id="primary-color-picker" value="#3b82f6">
-                         <span class="color-preview"></span>
-                    </div>
-                </div>
-                 <div class="form-group">
-                    <label for="secondary-color-picker">Cor Secundária (Fundo)</label>
-                    <div class="color-picker-wrapper">
-                         <input type="color" id="secondary-color-picker" value="#a855f7">
-                    </div>
-                </div>
-                 <div class="form-group">
-                    <label for="text-color-picker">Cor do Texto Principal</label>
-                    <div class="color-picker-wrapper">
-                         <input type="color" id="text-color-picker" value="#f4f4f5">
-                    </div>
-                </div>
-                 <div class="form-group">
-                    <label for="text-sec-color-picker">Cor do Texto Secundário</label>
-                    <div class="color-picker-wrapper">
-                         <input type="color" id="text-sec-color-picker" value="#a1a1aa">
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button type="button" class="btn btn-primary" onclick="this.closest('dialog').close()">Concluído</button>
-            </div>
-        </form>
-    </dialog>
-  </body>
 </html>

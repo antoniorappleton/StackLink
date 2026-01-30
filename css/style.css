@@ -484,6 +484,7 @@ dialog {
     transition: transform 0.2s, box-shadow 0.2s;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .link-card:hover {

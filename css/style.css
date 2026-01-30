@@ -893,6 +893,7 @@ dialog::backdrop {
     height: 0;
 }
 
+.radio-option span {
     display: block;
     text-align: center;
     padding: 0.8rem;

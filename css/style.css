@@ -738,6 +738,17 @@ dialog::backdrop {
         flex: 1;
     }
 
+    /* Adjust Categories Grid for Mobile */
+    .categories-grid {
+        gap: 1rem;
+        /* Force at least 2 columns on mobile for "cards" feel if space allows, or 1fr */
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+    
+    .category-card {
+        padding: 1rem; /* Smaller padding */
+    }
+
     .links-grid {
         grid-template-columns: 1fr;
     }
@@ -882,12 +893,16 @@ dialog::backdrop {
     height: 0;
 }
 
-.radio-option span {
     display: block;
     text-align: center;
     padding: 0.8rem;
     background: var(--card-bg);
     border: 2px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
 
 .header-actions {
     display: flex;
@@ -911,9 +926,6 @@ dialog {
     width: 100%;
     /* Ensure it doesn't overflow horizontally */
     max-width: 100%; 
-}
-    font-size: 0.9rem;
-    color: var(--text-secondary);
 }
 
 .radio-option input:checked + span {

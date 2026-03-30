@@ -25,12 +25,22 @@
 </head>
 
 <body>
+  <!-- Atmospheric Background Elements -->
+  <div class="bg-glow"></div>
+  
   <div class="app-container">
-    <!-- Auth Screen (Hidden by default or toggled via JS) -->
+    <!-- Auth Screen -->
     <section id="auth-screen" class="hidden">
       <div class="auth-card glass">
+        <div class="auth-logo">
+          <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </svg>
+        </div>
         <h1>StackLink</h1>
-        <p>O seu cofre de links pessoal.</p>
+        <p>A sua biblioteca digital de links, reinventada.</p>
         <button id="login-btn" class="btn btn-primary">
           <svg width="20" height="20" viewBox="0 0 24 24">
             <path fill="currentColor"
@@ -41,269 +51,227 @@
       </div>
     </section>
 
-    <!-- Main App (Hidden until auth) -->
+    <!-- Main App -->
     <div id="main-app" class="hidden">
       <header class="app-header glass">
         <div class="logo">
-          <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+          <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
             fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
             <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
           </svg>
           <span class="text">StackLink</span>
         </div>
+        
         <div class="user-profile">
-          <!-- Settings Button -->
-          <button id="settings-btn" class="btn-icon" title="Definições">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path
-                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
-              </path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-          </button>
           <button id="theme-toggle-btn" class="btn-icon" title="Alternar Tema">
-            <!-- Sun Icon (Default/Dark Mode) -->
-            <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="5" />
-              <line x1="12" y1="1" x2="12" y2="3" />
-              <line x1="12" y1="21" x2="12" y2="23" />
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-              <line x1="1" y1="12" x2="3" y2="12" />
-              <line x1="21" y1="12" x2="23" y2="12" />
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-            </svg>
-            <!-- Moon Icon (Light Mode - Hidden by default) -->
-            <svg class="icon-moon hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-            </svg>
+            <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <svg class="icon-moon hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
           </button>
-          <!-- User Avatar injected here -->
+          
+          <button id="settings-btn" class="btn-icon" title="Definições">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
+
           <button id="logout-btn" class="btn-icon" title="Sair">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" x2="9" y1="12" y2="12" />
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
           </button>
         </div>
       </header>
 
       <main>
+        <!-- Welcome Hero -->
+        <section class="hero-section" style="margin-bottom: 3rem; animation: slideUp 0.8s var(--transit-smooth);">
+          <h1 style="font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem;">Olá! Para onde vamos hoje?</h1>
+          <p style="color: var(--text-secondary); font-size: 1.1rem;">Organize e aceda aos seus recursos favoritos com estilo.</p>
+        </section>
+
         <section class="controls-section">
           <div class="search-bar glass">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" x2="16.65" y1="16.65" y2="16.65" />
+              <circle cx="11" cy="11" r="8" /><line x1="21" x2="16.65" y1="16.65" y2="16.65" />
             </svg>
-            <input type="text" id="search-input" placeholder="Pesquisar links..." />
+            <input type="text" id="search-input" placeholder="O que procura?" />
           </div>
-          <div class="actions">
-            <button id="toggle-view-btn" class="btn-icon-soft" title="Alternar Visualização">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="7" height="7"></rect>
-                <rect x="14" y="3" width="7" height="7"></rect>
-                <rect x="14" y="14" width="7" height="7"></rect>
-                <rect x="3" y="14" width="7" height="7"></rect>
-              </svg>
-            </button>
+          <div class="actions" style="display: flex; gap: 0.75rem;">
             <button id="add-link-btn" class="btn btn-primary">
-              + Novo Link
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Novo Link
             </button>
             <button id="add-category-btn" class="btn btn-secondary">
-              + Categoria
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              Nova Stack
+            </button>
+            <button id="toggle-view-btn" class="btn-icon-soft btn-secondary" title="Mudar Visualização">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
             </button>
           </div>
         </section>
 
-        <div class="categories-wrapper">
-          <section class="categories-grid" id="categories-container">
-            <!-- Category Cards injected here -->
-          </section>
-        </div>
-
-        <!-- REMOVED: Old links-grid section from here -->
+        <section class="categories-grid" id="categories-container">
+          <!-- Dynamic Categories -->
+        </section>
       </main>
     </div>
   </div>
 
-  <!-- Modals -->
-  <!-- NEW: Category Links Modal -->
+  <!-- Dialogs (Redesign) -->
   <dialog id="category-links-dialog" class="glass-dialog full-screen-dialog">
     <div class="dialog-header">
       <div class="header-content">
         <span id="modal-category-icon" class="category-icon-large"></span>
-        <h2 id="modal-category-title">Categoria</h2>
+        <h2 id="modal-category-title">Stack</h2>
       </div>
       <div class="header-actions">
-        <button type="button" class="btn-icon" onclick="this.closest('dialog').close()" title="Fechar">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
+        <button type="button" class="btn-icon" onclick="this.closest('dialog').close()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
     </div>
-
     <div class="dialog-body">
-      <section class="links-grid" id="modal-links-container">
-        <!-- Links injected here -->
-      </section>
+      <div class="links-grid" id="modal-links-container"></div>
     </div>
   </dialog>
+
+  <!-- Add Link Dialog -->
   <dialog id="link-dialog" class="glass-dialog">
     <form method="dialog" id="link-form">
-      <h2>Novo Link</h2>
+      <h2 style="margin-bottom: 2rem; background: var(--accent-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Guardar Novo Link</h2>
+      
       <div class="form-group">
-        <label for="link-url">URL</label>
-        <input type="url" id="link-url" required placeholder="https://..." />
+        <label>Endereço URL</label>
+        <input type="url" id="link-url" required placeholder="https://exemplo.com" />
       </div>
+      
       <div class="form-group">
-        <label for="link-title">Título</label>
-        <input type="text" id="link-title" required placeholder="Ex: Documentação Firebase" />
+        <label>Título Amigável</label>
+        <input type="text" id="link-title" required placeholder="Título do recurso" />
       </div>
+      
       <div class="form-group">
-        <label for="link-description">Descrição</label>
-        <textarea id="link-description" rows="3" placeholder="Breve descrição do link (opcional)"></textarea>
+        <label>Notas Rápidas</label>
+        <textarea id="link-description" rows="2" placeholder="O que há de interessante aqui?"></textarea>
       </div>
-      <div class="form-group">
-        <label for="link-category">Categoria</label>
-        <select id="link-category">
-          <option value="">Sem categoria</option>
-        </select>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label>Stack / Categoria</label>
+          <select id="link-category"><option value="">Geral</option></select>
+        </div>
+        <div class="form-group">
+          <label>Personalizar Ícone</label>
+          <select id="link-icon"><option value="">Automático</option></select>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="link-icon">Ícone</label>
-        <select id="link-icon">
-          <option value="">Padrão (Globo)</option>
-        </select>
-      </div>
-      <div class="form-actions">
-        <button type="button" class="btn btn-ghost" onclick="this.closest('dialog').close()">
-          Cancelar
-        </button>
-        <button type="submit" class="btn btn-primary">Salvar</button>
+
+      <div class="form-actions" style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
+        <button type="button" class="btn btn-secondary" onclick="this.closest('dialog').close()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Adicionar Link</button>
       </div>
     </form>
   </dialog>
 
+  <!-- Add Category Dialog -->
   <dialog id="category-dialog" class="glass-dialog">
     <form method="dialog" id="category-form">
-      <h2>Nova Categoria</h2>
+      <h2 style="margin-bottom: 2rem; background: var(--accent-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Criar Nova Stack</h2>
+      
       <div class="form-group">
-        <label for="cat-name">Nome</label>
-        <input type="text" id="cat-name" required placeholder="Ex: Design, Dev..." />
+        <label>Nome da Stack</label>
+        <input type="text" id="cat-name" required placeholder="Ex: Design Inspiration, Dev Tools..." />
       </div>
+      
       <div class="form-group">
-        <label for="cat-icon">Ícone</label>
-        <select id="cat-icon">
-          <option value="">Padrão (Pasta)</option>
-        </select>
+        <label>Ícone Representativo</label>
+        <select id="cat-icon"></select>
       </div>
+      
       <div class="form-group">
-        <label for="cat-color">Cor</label>
-        <input type="color" id="cat-color" value="#3b82f6" />
+        <label>Cor de Identidade</label>
+        <input type="color" id="cat-color" value="#3b82f6" style="height: 3rem; padding: 0.25rem; cursor: pointer;" />
       </div>
-      <div class="form-actions">
-        <button type="button" class="btn btn-ghost" onclick="this.closest('dialog').close()">
-          Cancelar
-        </button>
-        <button type="submit" class="btn btn-primary">Salvar</button>
+
+      <div class="form-actions" style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
+        <button type="button" class="btn btn-secondary" onclick="this.closest('dialog').close()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Criar Stack</button>
       </div>
     </form>
   </dialog>
-
+  
   <dialog id="settings-dialog" class="glass-dialog">
     <form method="dialog" id="settings-form">
-      <h2>Personalização</h2>
+      <div class="dialog-header-inline" style="margin-bottom: 2rem;">
+        <h2 style="background: var(--accent-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Personalização</h2>
+      </div>
 
-      <div class="settings-section">
-        <div class="settings-section">
-          <h3>Fundo</h3>
-          <div class="form-group">
-            <label>Tipo de Fundo</label>
-            <div class="radio-group" id="bg-type-group">
-              <label class="radio-option">
-                <input type="radio" name="bg-type" value="solid" checked>
-                <span>Sólido</span>
-              </label>
-              <label class="radio-option">
-                <input type="radio" name="bg-type" value="gradient">
-                <span>Gradiente</span>
-              </label>
-              <label class="radio-option">
-                <input type="radio" name="bg-type" value="mesh">
-                <span>Mesh</span>
-              </label>
+      <div class="settings-grid" style="display: flex; flex-direction: column; gap: 1.5rem;">
+        
+        <!-- Theme Mode Toggle -->
+        <div class="settings-group">
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.75rem;">Modo de Cor</label>
+            <div style="display: flex; gap: 0.5rem;">
+                <button type="button" class="btn btn-secondary flex-grow theme-opt" data-theme="dark" style="flex: 1;">Escuro</button>
+                <button type="button" class="btn btn-secondary flex-grow theme-opt" data-theme="light" style="flex: 1;">Claro</button>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="bg-color-picker">Cor do Fundo (Sólido)</label>
-            <div class="color-picker-wrapper">
-              <input type="color" id="bg-color-picker" value="#09090b">
-            </div>
-          </div>
         </div>
 
-        <div class="settings-section">
-          <h3>Aparência</h3>
-          <div class="form-group">
-            <label for="card-bg-picker">Cor Base dos Cartões</label>
-            <div class="color-picker-wrapper">
-              <input type="color" id="card-bg-picker" value="#18181b">
+        <!-- Accent Colors -->
+        <div class="settings-group">
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.75rem;">Cores de Destaque</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="color-input-wrapper glass" style="padding: 0.5rem; border-radius: 12px; display: flex; align-items: center; gap: 0.5rem; border: 1px solid var(--border-color);">
+                    <input type="color" id="primary-color-input" value="#4f46e5" style="border: none; background: none; width: 32px; height: 32px; cursor: pointer;">
+                    <span style="font-size: 0.85rem; font-weight: 500;">Primária</span>
+                </div>
+                <div class="color-input-wrapper glass" style="padding: 0.5rem; border-radius: 12px; display: flex; align-items: center; gap: 0.5rem; border: 1px solid var(--border-color);">
+                    <input type="color" id="secondary-color-input" value="#9333ea" style="border: none; background: none; width: 32px; height: 32px; cursor: pointer;">
+                    <span style="font-size: 0.85rem; font-weight: 500;">Secundária</span>
+                </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="glass-opacity">Opacidade dos Cartões (<span id="opacity-value">80%</span>)</label>
-            <input type="range" id="glass-opacity" min="0" max="100" value="80">
-          </div>
-          <div class="form-group">
-            <label for="blur-strength">Desfoque do Vidro (<span id="blur-value">12px</span>)</label>
-            <input type="range" id="blur-strength" min="0" max="40" value="12">
-          </div>
         </div>
 
-        <div class="settings-section">
-          <h3>Cores</h3>
-          <div class="form-group">
-            <label for="primary-color-picker">Cor de Destaque (Primária)</label>
-            <div class="color-picker-wrapper">
-              <input type="color" id="primary-color-picker" value="#3b82f6">
-              <span class="color-preview"></span>
+        <!-- Base Hue -->
+        <div class="settings-group">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">Tom de Base</label>
+                <span id="base-hue-val" style="font-size: 0.85rem; font-weight: 600;">240°</span>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="secondary-color-picker">Cor Secundária (Fundo)</label>
-            <div class="color-picker-wrapper">
-              <input type="color" id="secondary-color-picker" value="#a855f7">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="text-color-picker">Cor do Texto Principal</label>
-            <div class="color-picker-wrapper">
-              <input type="color" id="text-color-picker" value="#f4f4f5">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="text-sec-color-picker">Cor do Texto Secundário</label>
-            <div class="color-picker-wrapper">
-              <input type="color" id="text-sec-color-picker" value="#a1a1aa">
-            </div>
-          </div>
+            <input type="range" id="base-hue-input" min="0" max="360" value="240" style="width: 100%;">
         </div>
 
-        <div class="form-actions">
-          <button type="button" class="btn btn-primary" onclick="this.closest('dialog').close()">Concluído</button>
+        <!-- Glassmorphism -->
+        <div class="settings-group">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">Intensidade do Vidro</label>
+                <span id="glass-opacity-val" style="font-size: 0.85rem; font-weight: 600;">60%</span>
+            </div>
+            <input type="range" id="glass-opacity-input" min="0" max="100" value="60" style="width: 100%;">
         </div>
+
+        <!-- Blur -->
+        <div class="settings-group">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">Desfoque (Blur)</label>
+                <span id="glass-blur-val" style="font-size: 0.85rem; font-weight: 600;">16px</span>
+            </div>
+            <input type="range" id="glass-blur-input" min="0" max="40" value="16" style="width: 100%;">
+        </div>
+
+        <!-- Radius -->
+        <div class="settings-group">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">Arredondamento</label>
+                <span id="radius-val" style="font-size: 0.85rem; font-weight: 600;">24px</span>
+            </div>
+            <input type="range" id="radius-input" min="0" max="40" value="24" style="width: 100%;">
+        </div>
+
+      </div>
+
+      <div class="form-actions" style="margin-top: 3rem; display: flex; justify-content: center;">
+        <button type="button" class="btn btn-primary" onclick="this.closest('dialog').close()" style="padding: 0.75rem 3rem;">Concluir</button>
+      </div>
     </form>
   </dialog>
 </body>

@@ -31,65 +31,80 @@ export class Settings {
 
     addEventListeners() {
         // Open Dialog
-        this.btn.addEventListener('click', () => {
-            this.dialog.showModal();
-        });
+        if (this.btn && this.dialog) {
+            this.btn.addEventListener('click', () => {
+                this.dialog.showModal();
+            });
+        }
 
         // Theme Options
-        this.themeOpts.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const theme = btn.dataset.theme;
-                document.documentElement.setAttribute('data-theme', theme);
-                localStorage.setItem('stacklink_theme', theme);
-                // Update theme icon via global function if available or just let it be
-                if (window.updateThemeIcon) window.updateThemeIcon(theme);
-                this.saveSettings();
+        if (this.themeOpts) {
+            this.themeOpts.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const theme = btn.dataset.theme;
+                    document.documentElement.setAttribute('data-theme', theme);
+                    localStorage.setItem('stacklink_theme', theme);
+                    if (window.updateThemeIcon) window.updateThemeIcon(theme);
+                    this.saveSettings();
+                });
             });
-        });
+        }
 
         // Accent Colors
-        this.primaryColorInput.addEventListener('input', (e) => {
-            document.documentElement.style.setProperty('--accent-primary', e.target.value);
-            this.saveSettings();
-        });
+        if (this.primaryColorInput) {
+            this.primaryColorInput.addEventListener('input', (e) => {
+                document.documentElement.style.setProperty('--accent-primary', e.target.value);
+                this.saveSettings();
+            });
+        }
         
-        this.secondaryColorInput.addEventListener('input', (e) => {
-            document.documentElement.style.setProperty('--accent-secondary', e.target.value);
-            this.saveSettings();
-        });
+        if (this.secondaryColorInput) {
+            this.secondaryColorInput.addEventListener('input', (e) => {
+                document.documentElement.style.setProperty('--accent-secondary', e.target.value);
+                this.saveSettings();
+            });
+        }
 
         // Base Hue
-        this.baseHueInput.addEventListener('input', (e) => {
-            const val = e.target.value;
-            this.baseHueVal.textContent = `${val}°`;
-            document.documentElement.style.setProperty('--base-hull', val);
-            this.saveSettings();
-        });
+        if (this.baseHueInput && this.baseHueVal) {
+            this.baseHueInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                this.baseHueVal.textContent = `${val}°`;
+                document.documentElement.style.setProperty('--base-hull', val);
+                this.saveSettings();
+            });
+        }
 
         // Glass Opacity
-        this.glassOpacityInput.addEventListener('input', (e) => {
-            const val = e.target.value;
-            this.glassOpacityVal.textContent = `${val}%`;
-            document.documentElement.style.setProperty('--glass-opacity', val / 100);
-            this.saveSettings();
-        });
+        if (this.glassOpacityInput && this.glassOpacityVal) {
+            this.glassOpacityInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                this.glassOpacityVal.textContent = `${val}%`;
+                document.documentElement.style.setProperty('--glass-opacity', val / 100);
+                this.saveSettings();
+            });
+        }
 
         // Glass Blur
-        this.glassBlurInput.addEventListener('input', (e) => {
-            const val = e.target.value;
-            this.glassBlurVal.textContent = `${val}px`;
-            document.documentElement.style.setProperty('--glass-blur', `${val}px`);
-            this.saveSettings();
-        });
+        if (this.glassBlurInput && this.glassBlurVal) {
+            this.glassBlurInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                this.glassBlurVal.textContent = `${val}px`;
+                document.documentElement.style.setProperty('--glass-blur', `${val}px`);
+                this.saveSettings();
+            });
+        }
 
         // Radius
-        this.radiusInput.addEventListener('input', (e) => {
-            const val = e.target.value;
-            this.radiusVal.textContent = `${val}px`;
-            document.documentElement.style.setProperty('--radius-lg', `${val}px`);
-            document.documentElement.style.setProperty('--radius-md', `${Math.max(8, val - 10)}px`);
-            this.saveSettings();
-        });
+        if (this.radiusInput && this.radiusVal) {
+            this.radiusInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                this.radiusVal.textContent = `${val}px`;
+                document.documentElement.style.setProperty('--radius-lg', `${val}px`);
+                document.documentElement.style.setProperty('--radius-md', `${Math.max(8, val - 10)}px`);
+                this.saveSettings();
+            });
+        }
     }
 
     saveSettings() {
@@ -109,30 +124,30 @@ export class Settings {
         if (saved) {
             const settings = JSON.parse(saved);
             
-            if (settings.primaryColor) {
+            if (settings.primaryColor && this.primaryColorInput) {
                 this.primaryColorInput.value = settings.primaryColor;
                 document.documentElement.style.setProperty('--accent-primary', settings.primaryColor);
             }
-            if (settings.secondaryColor) {
+            if (settings.secondaryColor && this.secondaryColorInput) {
                 this.secondaryColorInput.value = settings.secondaryColor;
                 document.documentElement.style.setProperty('--accent-secondary', settings.secondaryColor);
             }
-            if (settings.baseHue) {
+            if (settings.baseHue && this.baseHueInput && this.baseHueVal) {
                 this.baseHueInput.value = settings.baseHue;
                 this.baseHueVal.textContent = `${settings.baseHue}°`;
                 document.documentElement.style.setProperty('--base-hull', settings.baseHue);
             }
-            if (settings.glassOpacity) {
+            if (settings.glassOpacity && this.glassOpacityInput && this.glassOpacityVal) {
                 this.glassOpacityInput.value = settings.glassOpacity;
                 this.glassOpacityVal.textContent = `${settings.glassOpacity}%`;
                 document.documentElement.style.setProperty('--glass-opacity', settings.glassOpacity / 100);
             }
-            if (settings.glassBlur) {
+            if (settings.glassBlur && this.glassBlurInput && this.glassBlurVal) {
                 this.glassBlurInput.value = settings.glassBlur;
                 this.glassBlurVal.textContent = `${settings.glassBlur}px`;
                 document.documentElement.style.setProperty('--glass-blur', `${settings.glassBlur}px`);
             }
-            if (settings.radius) {
+            if (settings.radius && this.radiusInput && this.radiusVal) {
                 this.radiusInput.value = settings.radius;
                 this.radiusVal.textContent = `${settings.radius}px`;
                 document.documentElement.style.setProperty('--radius-lg', `${settings.radius}px`);

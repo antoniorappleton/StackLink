@@ -209,6 +209,10 @@ const handleLinkActions = async (e) => {
   if (e.target.closest("a")) return;
 
   if (linkCard && !btn) {
+    if (window.innerWidth <= 768) {
+        linkCard.classList.toggle('expanded');
+        return;
+    }
     const url = linkCard.dataset.url;
     if (url) window.open(url, "_blank");
     return;
@@ -385,6 +389,8 @@ const populateIconSelects = () => {
   });
 };
 
+// --- Initialization ---
+
 const renderCategories = () => {
   const counts = links.reduce((acc, link) => {
       acc.all = (acc.all || 0) + 1;
@@ -392,20 +398,26 @@ const renderCategories = () => {
       if (link.categoryId) acc[link.categoryId] = (acc[link.categoryId] || 0) + 1;
       return acc;
     }, { all: 0, favorites: 0 });
+  
+  const firstName = currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'Meu';
 
   let html = `
     <div class="category-card" data-id="all" style="animation: slideUp 0.4s var(--transit-smooth); --cat-accent: var(--accent-primary)">
-        <div class="cat-card-icon">${ICONS.globe}</div>
-        <div class="cat-card-info">
-            <h3>Todos</h3>
-            <span class="count">${counts.all || 0} Links</span>
+        <div class="cat-card-icon-container">${ICONS.globe}</div>
+        <div class="cat-card-body">
+            <div class="cat-card-info">
+                <h3>Todos os Links</h3>
+                <span class="count">${counts.all || 0} Itens</span>
+            </div>
         </div>
     </div>
     <div class="category-card" data-id="favorites" style="animation: slideUp 0.5s var(--transit-smooth); --cat-accent: #fbbf24">
-        <div class="cat-card-icon">${ICONS.star}</div>
-        <div class="cat-card-info">
-            <h3>Favoritos</h3>
-            <span class="count">${counts.favorites || 0} Links</span>
+        <div class="cat-card-icon-container" style="color: #fbbf24">${ICONS.star}</div>
+        <div class="cat-card-body">
+            <div class="cat-card-info">
+                <h3>Favoritos de ${firstName}</h3>
+                <span class="count">${counts.favorites || 0} Itens</span>
+            </div>
         </div>
     </div>
   `;
@@ -418,10 +430,12 @@ const renderCategories = () => {
 
     html += `
         <div class="category-card" data-id="${cat.id}" style="animation: slideUp ${delay}s var(--transit-smooth); --cat-accent: ${catAccent}">
-            <div class="cat-card-icon">${iconHtml}</div>
-             <div class="cat-card-info">
-                <h3>${cat.name}</h3>
-                <span class="count">${count} Links</span>
+            <div class="cat-card-icon-container" style="color: ${catAccent}">${iconHtml}</div>
+            <div class="cat-card-body">
+                 <div class="cat-card-info">
+                    <h3>${cat.name}</h3>
+                    <span class="count">${count} Recursos</span>
+                </div>
             </div>
         </div>`;
   });

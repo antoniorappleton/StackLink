@@ -565,16 +565,11 @@ body {
     }
 }
 
-.link-card.expanded .card-desc {
-    -webkit-line-clamp: unset;
-    line-clamp: unset;
-    display: block;
-}
-
-.link-card.expanded {
-    background: var(--card-hover);
-    border-color: var(--accent-primary);
-    transform: scale(1.02);
+@media (max-width: 768px) {
+    .card-desc {
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+    }
 }
 
 .card-header {

@@ -209,10 +209,6 @@ const handleLinkActions = async (e) => {
   if (e.target.closest("a")) return;
 
   if (linkCard && !btn) {
-    if (window.innerWidth <= 768) {
-        linkCard.classList.toggle('expanded');
-        return;
-    }
     const url = linkCard.dataset.url;
     if (url) window.open(url, "_blank");
     return;

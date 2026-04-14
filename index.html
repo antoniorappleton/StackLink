@@ -137,63 +137,83 @@
 
   <!-- Add Link Dialog -->
   <dialog id="link-dialog" class="glass-dialog">
+    <div class="dialog-header-minimal">
+        <button type="button" class="btn-icon close-dialog-btn" onclick="this.closest('dialog').close()" title="Fechar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+    </div>
     <form method="dialog" id="link-form">
-      <h2 style="margin-bottom: 2rem; background: var(--accent-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Guardar Novo Link</h2>
+      <h2>Guardar Novo Recurso</h2>
       
-      <div class="form-group">
-        <label>Endereço URL</label>
-        <input type="url" id="link-url" required placeholder="https://exemplo.com" />
-      </div>
-      
-      <div class="form-group">
-        <label>Título Amigável</label>
-        <input type="text" id="link-title" required placeholder="Título do recurso" />
-      </div>
-      
-      <div class="form-group">
-        <label>Notas Rápidas</label>
-        <textarea id="link-description" rows="2" placeholder="O que há de interessante aqui?"></textarea>
-      </div>
-      
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-        <div class="form-group">
-          <label>Stack / Categoria</label>
-          <select id="link-category"><option value="">Geral</option></select>
-        </div>
-        <div class="form-group">
-          <label>Personalizar Ícone</label>
-          <select id="link-icon"><option value="">Automático</option></select>
-        </div>
+      <div class="form-grid">
+          <div class="form-group full-width">
+            <label>Endereço URL</label>
+            <input type="url" id="link-url" required placeholder="https://exemplo.com/recurso" />
+          </div>
+          
+          <div class="form-group full-width">
+            <label>Título do Link</label>
+            <input type="text" id="link-title" required placeholder="Ex: Inspiração para Design" />
+          </div>
+          
+          <div class="form-group full-width">
+            <label>Breve Descrição (Opcional)</label>
+            <textarea id="link-description" rows="3" placeholder="O que torna este link especial?"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label>Stack Destino</label>
+            <select id="link-category">
+                <option value="">Geral</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Identificador Visual</label>
+            <select id="link-icon">
+                <option value="">Detetar Automaticamente</option>
+            </select>
+          </div>
       </div>
 
-      <div class="form-actions" style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
-        <button type="button" class="btn btn-secondary" onclick="this.closest('dialog').close()">Cancelar</button>
-        <button type="submit" class="btn btn-primary">Adicionar Link</button>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" onclick="this.closest('dialog').close()">Descartar</button>
+        <button type="submit" class="btn btn-primary">Guardar na Stack</button>
       </div>
     </form>
   </dialog>
 
   <!-- Add Category Dialog -->
   <dialog id="category-dialog" class="glass-dialog">
+    <div class="dialog-header-minimal">
+        <button type="button" class="btn-icon close-dialog-btn" onclick="this.closest('dialog').close()" title="Fechar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+    </div>
     <form method="dialog" id="category-form">
-      <h2 style="margin-bottom: 2rem; background: var(--accent-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Criar Nova Stack</h2>
+      <h2>Criar Nova Stack</h2>
       
-      <div class="form-group">
-        <label>Nome da Stack</label>
-        <input type="text" id="cat-name" required placeholder="Ex: Design Inspiration, Dev Tools..." />
-      </div>
-      
-      <div class="form-group">
-        <label>Ícone Representativo</label>
-        <select id="cat-icon"></select>
-      </div>
-      
-      <div class="form-group">
-        <label>Cor de Identidade</label>
-        <input type="color" id="cat-color" value="#3b82f6" style="height: 3rem; padding: 0.25rem; cursor: pointer;" />
+      <div class="form-grid">
+          <div class="form-group full-width">
+            <label>Nome da Stack</label>
+            <input type="text" id="cat-name" required placeholder="Ex: Design, Desenvolvimento, Cinema..." />
+          </div>
+          
+          <div class="form-group">
+            <label>Ícone Representativo</label>
+            <select id="cat-icon"></select>
+          </div>
+          
+          <div class="form-group">
+            <label>Cor de Identidade</label>
+            <div class="color-picker-sophisticated">
+                <input type="color" id="cat-color" value="#3b82f6" />
+                <span class="color-preview-label">Cor Selecionada</span>
+            </div>
+          </div>
       </div>
 
-      <div class="form-actions" style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
+      <div class="form-actions">
         <button type="button" class="btn btn-secondary" onclick="this.closest('dialog').close()">Cancelar</button>
         <button type="submit" class="btn btn-primary">Criar Stack</button>
       </div>

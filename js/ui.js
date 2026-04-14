@@ -82,13 +82,26 @@ export const initUI = (user) => {
 const updateGreeting = () => {
     if (!heroTitle || !currentUser) return;
     const hour = new Date().getHours();
-    let greeting = "Olá";
-    if (hour < 12) greeting = "Bom dia";
-    else if (hour < 18) greeting = "Boa tarde";
-    else greeting = "Boa noite";
-    
     const firstName = currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'Explorador';
-    heroTitle.textContent = `${greeting}, ${firstName}! 👋`;
+    
+    let greetingPrefix = "Bom dia";
+    let message = "Pronto para organizar as suas ideias?";
+    
+    if (hour >= 12 && hour < 18) {
+        greetingPrefix = "Boa tarde";
+        message = "O que vamos guardar hoje?";
+    } else if (hour >= 18 || hour < 5) {
+        greetingPrefix = "Boa noite";
+        message = "Guarde as suas descobertas para amanhã.";
+    }
+    
+    heroTitle.innerHTML = `
+        <span style="display: block; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent-primary); margin-bottom: 1rem; font-weight: 700;">${greetingPrefix}, ${firstName}</span>
+        <span style="display: block; line-height: 1.1;">Para onde vamos hoje?</span>
+    `;
+    
+    const subtitle = document.querySelector(".hero-section p");
+    if (subtitle) subtitle.textContent = message;
 };
 
 const setupEventListeners = () => {
@@ -422,17 +435,18 @@ const renderCategories = () => {
     const count = counts[cat.id] || 0;
     const iconHtml = cat.icon && ICONS[cat.icon] ? ICONS[cat.icon] : (cat.icon || ICONS.folder);
     const catAccent = cat.color || 'var(--accent-primary)';
-    const delay = 0.6 + (index * 0.1);
+    const delay = 0.2 + (index * 0.05);
 
     html += `
-        <div class="category-card" data-id="${cat.id}" style="animation: slideUp ${delay}s var(--transit-smooth); --cat-accent: ${catAccent}">
+        <div class="category-card" data-id="${cat.id}" style="animation: slideUp 0.8s cubic-bezier(0.2, 1, 0.3, 1) ${delay}s both; --cat-accent: ${catAccent}">
             <div class="cat-card-icon-container" style="color: ${catAccent}">${iconHtml}</div>
             <div class="cat-card-body">
                  <div class="cat-card-info">
                     <h3>${cat.name}</h3>
-                    <span class="count">${count} Recursos</span>
+                    <span class="count">${count} ${count === 1 ? 'Recurso' : 'Recursos'}</span>
                 </div>
             </div>
+            <div class="card-glow-effect" style="background: radial-gradient(circle at center, ${catAccent}20 0%, transparent 70%)"></div>
         </div>`;
   });
 

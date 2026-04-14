@@ -102,6 +102,19 @@ body {
 
 .hidden { display: none !important; }
 
+.card-glow-effect {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.category-card:hover .card-glow-effect {
+    opacity: 1;
+}
+
 /* --- Components: Buttons --- */
 .btn {
     appearance: none;
@@ -232,10 +245,13 @@ body {
     .app-header {
         top: 0;
         margin-bottom: 1.5rem;
-        padding: 1rem 1.25rem;
+        padding: 0.75rem 1.25rem;
         border-radius: 0 0 var(--radius-lg) var(--radius-lg);
         margin: -1rem -1rem 1.5rem -1rem;
         width: calc(100% + 2rem);
+        border-top: none;
+        border-left: none;
+        border-right: none;
     }
 }
 
@@ -268,23 +284,38 @@ body {
 }
 
 @media (max-width: 768px) {
-    .hero-section h1 {
-        font-size: 1.75rem !important;
-    }
     .controls-section {
         flex-direction: column;
         margin-bottom: 2rem;
     }
+    
     .controls-section .actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 0.5rem;
         width: 100%;
-        overflow-x: auto;
-        padding-bottom: 0.5rem;
+    }
+    
+    .controls-section .btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
     }
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-section h1 {
+    font-size: clamp(2.2rem, 8vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .search-bar {
@@ -484,9 +515,12 @@ body {
 @media (max-width: 768px) {
     .mobile-pull-bar {
         display: block;
-    }
-    .dialog-header {
-        padding: 1rem 1.5rem;
+        width: 36px;
+        height: 4px;
+        background: hsla(0, 0%, 100%, 0.2);
+        border-radius: var(--radius-full);
+        margin: 0.75rem auto;
+        flex-shrink: 0;
     }
 }
 .dialog-header {
@@ -629,36 +663,289 @@ body {
     color: white;
 }
 
-/* --- Modals / Dialogs --- */
+/* --- Modals / Dialogs Revolution (Sophisticated & Real) --- */
+dialog {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: auto;
+    color: var(--text-primary);
+    overflow: visible;
+    
+    /* Animation setup */
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+    transition: 
+        opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        display 0.4s allow-discrete;
+}
+
+dialog[open] {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+@starting-style {
+    dialog[open] {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+}
+
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0px);
+    transition: 
+        backdrop-filter 0.5s ease,
+        background-color 0.5s ease,
+        display 0.5s allow-discrete;
+}
+
+dialog[open]::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+}
+
+/* --- Deep Focus Effect (Revolutionary Touch) --- */
+body:has(dialog[open]) {
+    overflow: hidden; /* Fix the background */
+    padding-right: 6px; /* Compensate for scrollbar removal */
+}
+
+body:has(dialog[open]) .app-container {
+    filter: blur(4px) saturate(80%);
+    transition: 
+        filter 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    transform: scale(0.98);
+}
+
+/* --- Specialized Modal Components --- */
+.dialog-header-minimal {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 10;
+}
+
+.close-dialog-btn {
+    background: hsla(0, 0%, 100%, 0.05);
+    border: 1px solid hsla(0, 0%, 100%, 0.1);
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+
+.close-dialog-btn:hover {
+    background: hsla(0, 0%, 100%, 0.1);
+    color: var(--text-primary);
+    transform: rotate(90deg);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-grid .full-width {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 600px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.color-picker-sophisticated {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: hsla(0, 0%, 100%, 0.03);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid hsla(0, 0%, 100%, 0.08);
+}
+
+.color-picker-sophisticated input[type="color"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 12px;
+    padding: 0;
+    border: 2px solid hsla(0, 0%, 100%, 0.2);
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.color-picker-sophisticated input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-picker-sophisticated input[type="color"]::-webkit-color-swatch {
+    border: none;
+}
+
+.color-preview-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+@starting-style {
+    dialog[open]::backdrop {
+        background: rgba(0, 0, 0, 0);
+        backdrop-filter: blur(0px);
+    }
+}
+
 .glass-dialog {
-    background: var(--bg-color);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: linear-gradient(135deg, 
+        hsla(var(--base-hull), 10%, 15%, 0.95), 
+        hsla(var(--base-hull), 10%, 10%, 0.85));
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
     padding: 2.5rem;
     border-radius: var(--radius-lg);
-    width: 90%;
-    max-width: 480px;
-    border: 1px solid var(--glass-border);
-    color: var(--text-primary);
+    width: 95%;
+    max-width: 640px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 1px solid hsla(0, 0%, 100%, 0.1);
+    box-shadow: 
+        0 0 0 1px hsla(0, 0%, 100%, 0.05) inset,
+        0 20px 50px -10px rgba(0, 0, 0, 0.7),
+        0 0 40px -10px hsla(var(--base-hull), 80%, 50%, 0.2);
+    position: relative;
+    
+    /* Scrollbar Styling for Premium Feel */
+    scrollbar-width: thin;
+    scrollbar-color: hsla(0, 0%, 100%, 0.1) transparent;
 }
 
 @media (max-width: 768px) {
     .glass-dialog {
         padding: 1.5rem;
-        width: 95%;
+        margin: 0;
+        bottom: 0;
+        top: auto;
+        position: fixed;
+        width: 100%;
+        max-width: none;
+        height: auto;
+        max-height: 92vh;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        transform: translateY(100%);
+        padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        border-top: 1px solid hsla(0, 0%, 100%, 0.15);
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+    }
+    
+    dialog[open] .glass-dialog {
+        transform: translateY(0);
     }
 }
 
+.glass-dialog::-webkit-scrollbar {
+    width: 6px;
+}
+
+.glass-dialog::-webkit-scrollbar-thumb {
+    background: hsla(0, 0%, 100%, 0.1);
+    border-radius: 10px;
+}
+
+/* Sophisticated Frosted Glow */
+.glass-dialog::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    background: linear-gradient(180deg, hsla(0, 0%, 100%, 0.15), transparent 40%, transparent 60%, hsla(0, 0%, 100%, 0.05)) border-box;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+.glass-dialog h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .form-group label {
-    display: block;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-left: 2px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    background: hsla(0, 0%, 100%, 0.03);
+    border: 1px solid hsla(0, 0%, 100%, 0.08);
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) inset;
+}
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+    background: hsla(0, 0%, 100%, 0.05);
+    border-color: hsla(0, 0%, 100%, 0.15);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    background: hsla(0, 0%, 100%, 0.07);
+    border-color: var(--accent-primary);
+    box-shadow: 
+        0 0 0 4px hsla(225, 90%, 65%, 0.1),
+        0 2px 4px rgba(0, 0, 0, 0.1) inset;
+    transform: translateY(-1px);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 3rem;
+}
+
+.form-actions .btn {
+    padding: 0.8rem 2.5rem;
+    font-size: 1rem;
 }
 
 .btn-icon-soft:hover {

@@ -487,13 +487,17 @@ const renderLinks = () => {
       const catName = category ? category.name : "Geral";
       let hostname = "";
       try { hostname = new URL(link.url).hostname; } catch (e) { hostname = link.url; }
+      const faviconUrl = `https://www.google.com/s2/favicons?domain=${hostname}&sz=128`;
       const linkIcon = link.icon && ICONS[link.icon] ? ICONS[link.icon] : (link.icon || ICONS.globe);
       const delay = (index * 0.05);
 
       return `
         <div class="link-card" data-url="${link.url}" style="animation: slideUp 0.4s var(--transit-smooth) ${delay}s both;">
             <div class="card-header">
-                <div class="globe-icon">${linkIcon}</div>
+                <div class="globe-icon">
+                    <img src="${faviconUrl}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
+                    <div style="display: none;">${linkIcon}</div>
+                </div>
                 <button class="fav-btn btn-icon ${link.favorite ? "active" : ""}" data-id="${link.id}">
                     ${link.favorite ? ICONS.star : ICONS.star}
                 </button>

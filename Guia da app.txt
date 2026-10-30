@@ -1,41 +1,54 @@
-Guia do StackLink PWA
+Guia do Aroundwise
+
 Visão Geral
-StackLink é uma aplicação Progressive Web App (PWA) para gerir os seus links favoritos de forma elegante e organizada.
+Aroundwise é uma aplicação Progressive Web App (PWA) para gerir os seus links favoritos de forma elegante e organizada. "Tudo o que importa, à sua volta."
 
 Funcionalidades Principais
+
 1. Autenticação
 Login seguro com conta Google.
 Cada utilizador tem o seu próprio espaço privado na nuvem (Firestore).
 
 2. Organização Visual
-Categorias Dinâmicas: Crie categorias (ex: "Trabalho", "Estudos") com cores personalizadas.
-Ícones Automáticos: O sistema tenta adivinhar o ícone da categoria baseado no nome (ex: "Tech" -> código, "News" -> jornal).
-Contadores: Veja quantos links existem em cada categoria.
+Barra lateral: navegação fixa com "Todos os Links", "Favoritos" e as suas Stacks.
+Stacks (categorias): crie stacks (ex: "Trabalho", "Estudos") com ícone e cor personalizados.
+Contadores: veja quantos links existem em cada stack.
+Reordenar: arraste e solte as stacks na barra lateral, ou os links dentro de uma stack, para os organizar como quiser.
 
 3. Gestão de Links
-Adicionar: Guarde URLs com título e associe a uma categoria.
-Editar: Corrigiu o link errado? Basta clicar no lápis no cartão do link.
-Favoritos: Marque links importantes com uma estrela para acesso rápido na aba "Favoritos".
-Abrir: Botão de ação rápida para visitar o link.
-Apagar: Remova links que já não precisa.
+Adicionar: guarde URLs com título; o favicon e uma pré-visualização da página são obtidos automaticamente.
+Editar: clique no lápis no cartão do link para corrigir título, descrição, stack ou ícone.
+Favoritos: marque links importantes com uma estrela para acesso rápido.
+Abrir / Copiar: botões de ação rápida em cada cartão.
+Apagar: remova links que já não precisa.
 
 4. Filtros e Pesquisa
-Barra de Pesquisa: Encontre qualquer link pelo título ou URL instantaneamente.
-Navegação por Categoria: Clique nos "Chips" no topo para filtrar a lista.
+Barra de Pesquisa: encontre qualquer link pelo título ou URL instantaneamente dentro da vista atual.
+Navegação: clique em "Todos os Links", "Favoritos" ou numa Stack na barra lateral para filtrar.
 
-5. Instalação (PWA)
-Android/iOS: Abra no navegador e selecione "Adicionar ao Ecrã Principal" (Add to Home Screen).
-Desktop (Chrome/Edge): Clique no ícone de instalação na barra de endereço.
+5. Partilhar uma Stack
+No cabeçalho de uma Stack, clique no ícone de partilha para gerar um link público (aroundwise.pt/s/...).
+Quem receber o link vê os links dessa stack sem precisar de conta; se tiver sessão iniciada, pode guardá-la na sua própria conta com um clique.
+A partilha é uma cópia do momento em que foi criada — não se atualiza automaticamente se editar a stack depois.
+
+6. Importar / Exportar
+Em Definições → Dados: exporte toda a sua biblioteca em JSON (para voltar a importar no Aroundwise) ou em formato de Marcadores HTML (compatível com qualquer browser).
+Importe um ficheiro .json (exportado do Aroundwise) ou .html (marcadores exportados de um browser) para trazer os seus links existentes.
+
+7. Personalização
+Modo claro (padrão) ou escuro.
+Cores de destaque e arredondamento dos cantos ajustáveis em Definições.
+
+8. Instalação (PWA)
+Android/iOS: abra no navegador e selecione "Adicionar ao Ecrã Principal" (Add to Home Screen).
+Desktop (Chrome/Edge): clique no ícone de instalação na barra de endereço, ou no botão de instalação que aparece na barra lateral.
 A app funciona como uma aplicação nativa, sem barra de navegador e em ecrã inteiro.
+
 Notas Técnicas
-
-Offline: A app funciona offline para consulta (cache da interface), mas requer internet para sincronizar dados novos (Firestore).
-
-Tema: Design "Dark Elegant" otimizado para não cansar a vista.
+Offline: a app funciona offline para consulta (cache da interface), mas requer internet para sincronizar dados novos (Firestore) e para a pré-visualização automática de links.
+Tema: design "Light Elegant" com modo escuro opcional.
 
 Como Executar
-Certifique-se que o arquivo 
-js/firebase-config.js
- tem as credenciais corretas.
-Sirva a pasta do projeto com um servidor local (ex: Live Server do VS Code).
-Abra localhost no navegador.
+Certifique-se que o arquivo js/firebase-config.js tem as credenciais corretas.
+Para desenvolvimento local com os emuladores: `firebase emulators:start --only hosting,firestore,auth`.
+Para publicar: `firebase deploy --only hosting,firestore:rules`.

@@ -1,0 +1,23 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Private per-user data: links and categories. Only the owner may
+    // read or write anything under their own uid.
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Shared stacks: a denormalized, read-only snapshot anyone can view
+    // via a share link, but only the owner can create/update/delete.
+    match /sharedStacks/{shareId} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.ownerUid;
+      allow update, delete: if request.auth != null
+        && request.auth.uid == resource.data.ownerUid;
+    }
+  }
+}

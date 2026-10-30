@@ -1,4 +1,4 @@
-const CACHE_NAME = "stacklink-v4-ui-refactor";
+const CACHE_NAME = "aroundwise-v2";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
@@ -8,10 +8,20 @@ const ASSETS_TO_CACHE = [
   "./js/ui.js",
   "./js/db.js",
   "./js/firebase-init.js",
+  "./js/firebase-config.js",
   "./js/auth.js",
+  "./js/settings.js",
+  "./js/preview.js",
+  "./js/share.js",
+  "./js/importExport.js",
+  "./js/utils.js",
   "./manifest.json",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
+  "./assets/icon-512-maskable.png",
+  "./assets/apple-touch-icon.png",
+  "./assets/favicon.svg",
+  "./assets/favicon-32.png",
 ];
 
 self.addEventListener("install", (event) => {
@@ -37,6 +47,10 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  // Never intercept the Firestore/Auth/preview network calls or the
+  // public share route - only cache same-origin static assets.
+  if (event.request.method !== "GET") return;
+
   event.respondWith(
     caches
       .match(event.request)

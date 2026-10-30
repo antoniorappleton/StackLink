@@ -1,4 +1,4 @@
-const CACHE_NAME = "aroundwise-v2";
+const CACHE_NAME = "aroundwise-v3";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",

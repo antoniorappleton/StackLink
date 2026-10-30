@@ -1,7 +1,6 @@
-const CACHE_NAME = "aroundwise-v3";
+const CACHE_NAME = "aroundwise-v4";
 const ASSETS_TO_CACHE = [
   "./",
-  "./index.html",
   "./css/style.css",
   "./js/app.js",
   "./js/icons.js",

@@ -17,6 +17,10 @@
     --accent-gold-soft: hsla(38, 55%, 52%, 0.14);
     --accent-gradient: linear-gradient(135deg, var(--accent-primary), hsl(192, 48%, 36%));
 
+    /* Fixed brand mark color (the logo's accent dot) - stays constant
+       regardless of theme or the user's custom accent colors below. */
+    --brand-accent: #2BA88F;
+
     --danger: hsl(6, 70%, 50%);
 
     --shadow-sm: 0 1px 2px hsla(222, 30%, 10%, 0.05), 0 1px 1px hsla(222, 30%, 10%, 0.03);

@@ -1,4 +1,4 @@
-const CACHE_NAME = "aroundwise-v6";
+const CACHE_NAME = "aroundwise-v7";
 const ASSETS_TO_CACHE = [
   "./",
   "./css/style.css",
@@ -14,6 +14,7 @@ const ASSETS_TO_CACHE = [
   "./js/share.js",
   "./js/importExport.js",
   "./js/utils.js",
+  "./js/version.js",
   "./manifest.json",
   "./assets/icon-192.png",
   "./assets/icon-512.png",

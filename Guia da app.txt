@@ -10,26 +10,28 @@ Login seguro com conta Google.
 Cada utilizador tem o seu próprio espaço privado na nuvem (Firestore).
 
 2. Organização Visual
-Barra lateral: navegação fixa com "Todos os Links", "Favoritos" e as suas Stacks.
-Stacks (categorias): crie stacks (ex: "Trabalho", "Estudos") com ícone e cor personalizados.
-Contadores: veja quantos links existem em cada stack.
-Reordenar: arraste e solte as stacks na barra lateral, ou os links dentro de uma stack, para os organizar como quiser.
+Barra lateral: navegação fixa com "Todos os Links", "Favoritos" e "Os Meus Temas".
+Temas (categorias): crie temas (ex: "Trabalho", "Estudos") com ícone e cor personalizados. Ao criar um tema pode escolher uma das sugestões de nomes (Sistema: Caixa de Entrada, Arquivo, Gaveta, Por Ler…; Trabalho & Estudo; Pessoal), que também define o ícone.
+Contadores: veja quantos links existem em cada tema.
+Ordenar temas: no seletor junto a "Os Meus Temas" escolha Manual, A → Z, Z → A, Mais links ou Menos links.
+Reordenar: em modo Manual, arraste e solte os temas na barra lateral, ou os links dentro de um tema, para os organizar como quiser.
+Disposição: no topo, alterne entre cartões em Grelha ou Em linha.
 
 3. Gestão de Links
 Adicionar: guarde URLs com título; o favicon e uma pré-visualização da página são obtidos automaticamente.
-Editar: clique no lápis no cartão do link para corrigir título, descrição, stack ou ícone.
+Editar: clique no lápis no cartão do link para corrigir título, descrição, tema ou ícone.
 Favoritos: marque links importantes com uma estrela para acesso rápido.
 Abrir / Copiar: botões de ação rápida em cada cartão.
 Apagar: remova links que já não precisa.
 
 4. Filtros e Pesquisa
 Barra de Pesquisa: encontre qualquer link pelo título ou URL instantaneamente dentro da vista atual.
-Navegação: clique em "Todos os Links", "Favoritos" ou numa Stack na barra lateral para filtrar.
+Navegação: clique em "Todos os Links", "Favoritos" ou num Tema na barra lateral para filtrar.
 
-5. Partilhar uma Stack
-No cabeçalho de uma Stack, clique no ícone de partilha para gerar um link público (aroundwise.pt/s/...).
-Quem receber o link vê os links dessa stack sem precisar de conta; se tiver sessão iniciada, pode guardá-la na sua própria conta com um clique.
-A partilha é uma cópia do momento em que foi criada — não se atualiza automaticamente se editar a stack depois.
+5. Partilhar um Tema
+No cabeçalho de um Tema, clique no ícone de partilha para gerar um link público (aroundwise.pt/s/...).
+Quem receber o link vê os links desse tema sem precisar de conta; se tiver sessão iniciada, pode guardá-lo na sua própria conta com um clique.
+A partilha é uma cópia do momento em que foi criado — não se atualiza automaticamente se editar o tema depois.
 
 6. Importar / Exportar
 Em Definições → Dados: exporte toda a sua biblioteca em JSON (para voltar a importar no Aroundwise) ou em formato de Marcadores HTML (compatível com qualquer browser).

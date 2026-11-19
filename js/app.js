@@ -73,12 +73,12 @@ const renderShareScreen = async () => {
 
   const stack = await fetchSharedStack(shareId);
   if (!stack) {
-    document.getElementById("share-title").textContent = "Stack não encontrada";
+    document.getElementById("share-title").textContent = "Tema não encontrado";
     document.getElementById("share-owner").textContent = "Este link pode ter expirado.";
     return;
   }
 
-  document.getElementById("share-owner").textContent = `Stack partilhada por ${stack.ownerName}`;
+  document.getElementById("share-owner").textContent = `Tema partilhado por ${stack.ownerName}`;
   document.getElementById("share-title").textContent = stack.stackName;
   const iconEl = document.getElementById("share-icon");
   iconEl.innerHTML = stack.stackIcon && ICONS[stack.stackIcon] ? ICONS[stack.stackIcon] : ICONS.folder;
@@ -131,10 +131,10 @@ const renderShareScreen = async () => {
             favorite: false,
           });
         }
-        showToast("Stack guardada na sua conta!");
+        showToast("Tema guardado na sua conta!");
       } catch (err) {
         console.error(err);
-        showToast("Não foi possível guardar a stack.", "error");
+        showToast("Não foi possível guardar o tema.", "error");
       } finally {
         saveBtn.disabled = false;
       }

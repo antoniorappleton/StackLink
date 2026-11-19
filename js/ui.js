@@ -16,13 +16,60 @@ import { fetchLinkPreview } from "./preview.js";
 import { shareStack } from "./share.js";
 import { exportAsJson, exportAsBookmarksHtml, importFromFile } from "./importExport.js";
 import { showToast, getHostname, escapeHtml, safeHref } from "./utils.js";
+import { APP_VERSION } from "./version.js";
 
 // State
 let currentUser = null;
 let categories = [];
 let links = [];
 let activeView = "all"; // 'all' | 'favorites' | categoryId
-let isCompactView = localStorage.getItem("aroundwise_view_mode") === "compact";
+// Card layout: "grid" (cartões em grelha) or "list" (cartões em linha).
+// Migrates the old compact/expanded toggle value.
+let cardLayout =
+  localStorage.getItem("aroundwise_layout") ||
+  (localStorage.getItem("aroundwise_view_mode") === "compact" ? "list" : "grid");
+// Theme ordering in the sidebar: manual | az | za | most | least
+let stacksSort = localStorage.getItem("aroundwise_stacks_sort") || "manual";
+
+// Suggested theme names ("temas / gavetas / arquivos") with a matching icon.
+const THEME_PRESETS = [
+  { group: "Sistema", items: [
+    { name: "Caixa de Entrada", icon: "archive" },
+    { name: "Por Ler", icon: "bookmark" },
+    { name: "Arquivo", icon: "archive" },
+    { name: "Gaveta", icon: "folder" },
+    { name: "Documentos", icon: "fileText" },
+    { name: "Transferências", icon: "cloud" },
+    { name: "Rascunhos", icon: "file" },
+    { name: "Partilhados", icon: "messageCircle" },
+    { name: "Temporário", icon: "clock" },
+    { name: "Importante", icon: "star" },
+  ]},
+  { group: "Trabalho & Estudo", items: [
+    { name: "Trabalho", icon: "briefcase" },
+    { name: "Projetos", icon: "folder" },
+    { name: "Estudos", icon: "graduation" },
+    { name: "Cursos", icon: "book" },
+    { name: "Referências", icon: "book" },
+    { name: "Ferramentas", icon: "tool" },
+    { name: "Desenvolvimento", icon: "code" },
+    { name: "Design", icon: "palette" },
+    { name: "Finanças", icon: "dollarSign" },
+    { name: "Agenda", icon: "calendar" },
+  ]},
+  { group: "Pessoal", items: [
+    { name: "Casa", icon: "home" },
+    { name: "Saúde", icon: "heart" },
+    { name: "Receitas", icon: "coffee" },
+    { name: "Viagens", icon: "map" },
+    { name: "Compras", icon: "shoppingCart" },
+    { name: "Notícias", icon: "newspaper" },
+    { name: "Vídeos", icon: "video" },
+    { name: "Música", icon: "music" },
+    { name: "Jogos", icon: "gamepad" },
+    { name: "Redes Sociais", icon: "twitter" },
+  ]},
+];
 
 let editingLinkId = null;
 let editingCategoryId = null;
@@ -56,7 +103,7 @@ const linkPreviewDomain = document.getElementById("link-preview-domain");
 // Buttons
 const addLinkBtn = document.getElementById("add-link-btn");
 const addCategoryBtn = document.getElementById("add-category-btn");
-const toggleViewBtn = document.getElementById("toggle-view-btn");
+const stacksSortSelect = document.getElementById("stacks-sort");
 
 // --- Initialization ---
 
@@ -82,10 +129,13 @@ export const initUI = (user) => {
   setupEventListeners();
   populateIconSelects();
   initTheme();
+  populateThemePresets();
   renderSidebar();
   renderMainView();
+  applyCardLayout();
 
-  if (isCompactView) linksView.classList.add("compact-view");
+  const versionEl = document.getElementById("app-version");
+  if (versionEl) versionEl.textContent = `Aroundwise v${APP_VERSION}`;
 };
 
 const updateUserChip = () => {
@@ -103,7 +153,18 @@ const updateUserChip = () => {
 // --- Event Wiring ---
 
 const setupEventListeners = () => {
-  if (toggleViewBtn) toggleViewBtn.addEventListener("click", handleViewToggle);
+  document.querySelectorAll(".view-switch-btn").forEach((btn) =>
+    btn.addEventListener("click", () => setCardLayout(btn.dataset.layout))
+  );
+
+  if (stacksSortSelect) {
+    stacksSortSelect.value = stacksSort;
+    stacksSortSelect.addEventListener("change", () => {
+      stacksSort = stacksSortSelect.value;
+      localStorage.setItem("aroundwise_stacks_sort", stacksSort);
+      renderSidebar();
+    });
+  }
 
   const themeToggleBtn = document.getElementById("theme-toggle-btn");
   if (themeToggleBtn) themeToggleBtn.addEventListener("click", handleThemeToggle);
@@ -245,14 +306,16 @@ const renderSidebar = () => {
     iconSlot.innerHTML = btn.dataset.id === "favorites" ? ICONS.star : ICONS.globe;
   });
 
-  const sortedCats = [...categories].sort((a, b) => sortByOrder(a, b, false));
+  const sortedCats = sortCategories(categories, counts);
+  const isManual = stacksSort === "manual";
+  stacksList.classList.toggle("is-sorted", !isManual);
 
   stacksList.innerHTML = sortedCats
     .map((cat) => {
       const count = counts[cat.id] || 0;
       const active = cat.id === activeView;
       return `
-        <div class="stack-nav-item${active ? " active" : ""}" draggable="true" data-id="${cat.id}" style="--cat-accent: ${cat.color || "var(--accent-primary)"}">
+        <div class="stack-nav-item${active ? " active" : ""}" draggable="${isManual}" data-id="${cat.id}" style="--cat-accent: ${cat.color || "var(--accent-primary)"}">
             <span class="stack-dot"></span>
             <span class="nav-item-label">${escapeHtml(cat.name)}</span>
             <span class="nav-item-count">${count}</span>
@@ -261,8 +324,26 @@ const renderSidebar = () => {
     .join("");
 };
 
+const byName = (a, b) => (a.name || "").localeCompare(b.name || "", "pt", { sensitivity: "base" });
+
+const sortCategories = (cats, counts) => {
+  const list = [...cats];
+  switch (stacksSort) {
+    case "az":
+      return list.sort(byName);
+    case "za":
+      return list.sort((a, b) => byName(b, a));
+    case "most":
+      return list.sort((a, b) => (counts[b.id] || 0) - (counts[a.id] || 0) || byName(a, b));
+    case "least":
+      return list.sort((a, b) => (counts[a.id] || 0) - (counts[b.id] || 0) || byName(a, b));
+    default:
+      return list.sort((a, b) => sortByOrder(a, b, false));
+  }
+};
+
 const renderMainView = () => {
-  let title = "Stack";
+  let title = "Tema";
   let iconHtml = ICONS.globe;
   let color = "var(--accent-primary)";
   const isCustomStack = activeView !== "all" && activeView !== "favorites";
@@ -461,11 +542,14 @@ const openCategoryDialog = (cat = null) => {
     document.getElementById("cat-name").value = cat.name;
     document.getElementById("cat-icon").value = cat.icon || "";
     document.getElementById("cat-color").value = cat.color || "#15414A";
-    document.querySelector("#category-dialog .dialog-title").textContent = "Editar Stack";
+    document.querySelector("#category-dialog .dialog-title").textContent = "Editar Tema";
+    document.getElementById("cat-submit-btn").textContent = "Guardar Tema";
   } else {
-    document.querySelector("#category-dialog .dialog-title").textContent = "Criar Nova Stack";
+    document.querySelector("#category-dialog .dialog-title").textContent = "Criar Novo Tema";
+    document.getElementById("cat-submit-btn").textContent = "Criar Tema";
   }
 
+  syncPresetChips();
   categoryDialog.showModal();
 };
 
@@ -528,7 +612,7 @@ const handleCategorySubmit = async (e) => {
     categoryForm.reset();
   } catch (error) {
     console.error(error);
-    showToast("Não foi possível guardar a stack.", "error");
+    showToast("Não foi possível guardar o tema.", "error");
   }
 };
 
@@ -581,10 +665,10 @@ const handleShareStack = async () => {
   const stackLinks = links.filter((l) => l.categoryId === cat.id);
   try {
     const url = await shareStack(currentUser.uid, currentUser.displayName, cat, stackLinks);
-    showToast(`Link da stack copiado: ${url}`);
+    showToast(`Link do tema copiado: ${url}`);
   } catch (err) {
     console.error(err);
-    showToast("Não foi possível partilhar a stack.", "error");
+    showToast("Não foi possível partilhar o tema.", "error");
   }
 };
 
@@ -593,7 +677,7 @@ const handleImportFile = async (e) => {
   if (!file) return;
   try {
     const result = await importFromFile(currentUser.uid, file);
-    showToast(`Importado: ${result.categoriesImported} stacks, ${result.linksImported} links.`);
+    showToast(`Importado: ${result.categoriesImported} temas, ${result.linksImported} links.`);
   } catch (err) {
     console.error(err);
     showToast("Não foi possível importar o ficheiro.", "error");
@@ -602,10 +686,72 @@ const handleImportFile = async (e) => {
   }
 };
 
-const handleViewToggle = () => {
-  isCompactView = !isCompactView;
-  linksView.classList.toggle("compact-view", isCompactView);
-  localStorage.setItem("aroundwise_view_mode", isCompactView ? "compact" : "expanded");
+const applyCardLayout = () => {
+  linksView.classList.toggle("list-view", cardLayout === "list");
+  document.querySelectorAll(".view-switch-btn").forEach((btn) => {
+    const on = btn.dataset.layout === cardLayout;
+    btn.classList.toggle("active", on);
+    btn.setAttribute("aria-pressed", String(on));
+  });
+};
+
+const setCardLayout = (layout) => {
+  cardLayout = layout === "list" ? "list" : "grid";
+  localStorage.setItem("aroundwise_layout", cardLayout);
+  applyCardLayout();
+};
+
+// --- Theme name presets ---
+
+const populateThemePresets = () => {
+  const datalist = document.getElementById("cat-name-suggestions");
+  const chips = document.getElementById("cat-presets");
+  const all = THEME_PRESETS.flatMap((g) => g.items);
+
+  if (datalist) {
+    datalist.innerHTML = all.map((p) => `<option value="${escapeHtml(p.name)}"></option>`).join("");
+  }
+  if (!chips) return;
+
+  chips.innerHTML = THEME_PRESETS.map(
+    (g) => `
+      <div class="preset-group">
+        <span class="preset-group-label">${escapeHtml(g.group)}</span>
+        <div class="preset-group-items">
+          ${g.items
+            .map(
+              (p) => `<button type="button" class="preset-chip" data-name="${escapeHtml(p.name)}" data-icon="${p.icon}"><span class="preset-chip-icon">${ICONS[p.icon] || ICONS.folder}</span>${escapeHtml(p.name)}</button>`
+            )
+            .join("")}
+        </div>
+      </div>`
+  ).join("");
+
+  chips.addEventListener("click", (e) => {
+    const chip = e.target.closest(".preset-chip");
+    if (!chip) return;
+    document.getElementById("cat-name").value = chip.dataset.name;
+    const iconSelect = document.getElementById("cat-icon");
+    if (iconSelect && [...iconSelect.options].some((o) => o.value === chip.dataset.icon)) {
+      iconSelect.value = chip.dataset.icon;
+    }
+    syncPresetChips();
+  });
+  document.getElementById("cat-name")?.addEventListener("input", syncPresetChips);
+};
+
+// Highlight the chip matching the typed name and mark names already in use.
+const syncPresetChips = () => {
+  const current = (document.getElementById("cat-name")?.value || "").trim().toLowerCase();
+  const used = new Set(
+    categories.filter((c) => c.id !== editingCategoryId).map((c) => (c.name || "").trim().toLowerCase())
+  );
+  document.querySelectorAll(".preset-chip").forEach((chip) => {
+    const name = chip.dataset.name.toLowerCase();
+    chip.classList.toggle("active", name === current);
+    chip.classList.toggle("used", used.has(name));
+    chip.title = used.has(name) ? "Já existe um tema com este nome" : "";
+  });
 };
 
 const handleThemeToggle = () => {
@@ -657,6 +803,24 @@ const populateIconSelects = () => {
     { value: "youtube", label: "YouTube" },
     { value: "github", label: "GitHub" },
     { value: "folder", label: "Pasta" },
+    { value: "archive", label: "Arquivo" },
+    { value: "file", label: "Ficheiro" },
+    { value: "graduation", label: "Estudos" },
+    { value: "tool", label: "Ferramentas" },
+    { value: "home", label: "Casa" },
+    { value: "heart", label: "Saúde" },
+    { value: "map", label: "Viagens" },
+    { value: "shoppingCart", label: "Compras" },
+    { value: "newspaper", label: "Notícias" },
+    { value: "video", label: "Vídeo" },
+    { value: "music", label: "Música" },
+    { value: "gamepad", label: "Jogos" },
+    { value: "calendar", label: "Agenda" },
+    { value: "clock", label: "Relógio" },
+    { value: "cloud", label: "Nuvem" },
+    { value: "coffee", label: "Café" },
+    { value: "messageCircle", label: "Conversa" },
+    { value: "twitter", label: "Redes Sociais" },
   ];
 
   selects.forEach((select) => {

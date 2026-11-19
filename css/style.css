@@ -862,6 +862,51 @@ h1, h2, h3 {
 
 .form-actions-center { justify-content: center; }
 
+#cat-delete-btn { margin-right: auto; }
+
+.btn-danger {
+    background: var(--danger);
+    color: #fff;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-danger:hover { filter: brightness(0.92); box-shadow: var(--shadow-md); }
+
+.btn-danger-ghost {
+    background: none;
+    color: var(--danger);
+    border: 1px solid transparent;
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+}
+
+.btn-danger-ghost:hover { background: hsla(6, 70%, 50%, 0.08); border-color: hsla(6, 70%, 50%, 0.3); }
+
+.btn-icon-danger:hover { color: var(--danger); background: hsla(6, 70%, 50%, 0.08); }
+
+.dialog-title-danger { color: var(--danger); }
+
+.dialog-text { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.25rem; }
+
+.delete-options { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.radio-option {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: var(--transit-fast);
+}
+
+.radio-option:hover { border-color: var(--border-strong); }
+.radio-option:has(input:checked) { border-color: var(--accent-primary); background: var(--accent-soft); }
+.radio-option input { margin-top: 0.25rem; accent-color: var(--accent-primary); }
+.radio-option .text-muted { font-size: 0.82rem; }
+
 .link-preview {
     display: flex;
     align-items: center;
@@ -1074,4 +1119,122 @@ input[type="color"]::-webkit-color-swatch { border: 2px solid var(--border-color
     .list-view .card-body { grid-template-columns: 1fr; }
     .list-view .btn-open { display: none; }
     .list-view .card-actions { gap: 0.1rem; }
+}
+
+/* --- Search / sort / sync --- */
+.search-bar input[type="search"] { -webkit-appearance: none; appearance: none; }
+
+.sort-select-lg {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.6rem;
+    border-radius: var(--radius-md);
+    max-width: none;
+    align-self: center;
+}
+
+.sync-indicator {
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.sync-indicator::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.sync-indicator[data-state="offline"] { background: hsla(6, 70%, 50%, 0.1); color: var(--danger); }
+.sync-indicator[data-state="syncing"] { background: var(--accent-gold-soft); color: var(--accent-gold); }
+.sync-indicator[data-state="syncing"]::before { animation: syncPulse 1s ease-in-out infinite; }
+
+@keyframes syncPulse { 50% { opacity: 0.3; } }
+
+/* --- Theme tag on cards (shown outside the card's own theme) --- */
+.card-theme {
+    --cat-accent: var(--accent-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-left: 0.5rem;
+    padding: 0.05rem 0.5rem;
+    border-radius: var(--radius-full);
+    background: var(--border-color);
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+.card-theme .stack-dot { width: 7px; height: 7px; }
+
+/* --- Drag handles --- */
+.drag-handle {
+    display: inline-flex;
+    align-items: center;
+    color: var(--text-muted);
+    opacity: 0;
+    cursor: grab;
+    transition: opacity var(--transit-fast);
+}
+
+.stack-nav-item .drag-handle { margin-left: -0.35rem; margin-right: -0.4rem; width: 14px; }
+.stack-nav-item:hover .drag-handle,
+.link-card:hover .drag-handle { opacity: 0.8; }
+
+.link-card .card-header .drag-handle { margin-left: auto; margin-right: 0.25rem; align-self: center; }
+.links-grid:not(.is-draggable) .link-card { cursor: pointer; }
+.list-view .link-card .drag-handle { order: -1; margin: 0 -0.4rem 0 -0.3rem; }
+
+/* Native drag & drop doesn't work with touch, so don't advertise it there. */
+@media (hover: none) {
+    .drag-handle { display: none; }
+}
+
+/* --- Toast with action (Anular) --- */
+.toast { pointer-events: auto; display: inline-flex; align-items: center; gap: 0.9rem; }
+
+.toast-action {
+    background: none;
+    border: none;
+    color: var(--accent-gold);
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    padding: 0.15rem 0.35rem;
+    border-radius: var(--radius-sm);
+}
+
+.toast-action:hover { background: hsla(0, 0%, 100%, 0.12); }
+
+/* --- Hints / settings help --- */
+.field-hint { font-size: 0.8rem; margin-top: 0.4rem; }
+.field-hint-warn { color: var(--accent-gold); font-weight: 600; }
+[data-theme="light"] .field-hint-warn { color: hsl(32, 70%, 36%); }
+
+.settings-help { font-size: 0.84rem; color: var(--text-secondary); margin: 0.2rem 0 0.6rem; }
+
+.bookmarklet-btn { cursor: grab; text-decoration: none; margin-bottom: 0.6rem; }
+
+kbd {
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.05rem 0.4rem;
+    border: 1px solid var(--border-strong);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    background: var(--surface);
+}
+
+@media (max-width: 960px) {
+    .sync-indicator { order: 3; }
 }

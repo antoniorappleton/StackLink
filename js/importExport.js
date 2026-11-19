@@ -1,4 +1,5 @@
 import { exportUserData, importData } from "./db.js";
+import { normalizeUrl } from "./utils.js";
 
 const download = (filename, content, mime) => {
   const blob = new Blob([content], { type: mime });
@@ -85,15 +86,27 @@ const parseBookmarksHtml = (htmlText) => {
   return { categories, links };
 };
 
-export const importFromFile = async (uid, file) => {
+// existingUrls: Set of normalizeUrl() values already in the library.
+// Links already saved (or repeated inside the file) are skipped.
+export const importFromFile = async (uid, file, existingUrls = new Set()) => {
   const text = await file.text();
   let payload;
 
-  if (file.name.endsWith(".json")) {
+  if (file.name.toLowerCase().endsWith(".json")) {
     payload = JSON.parse(text);
   } else {
     payload = parseBookmarksHtml(text);
   }
 
-  return importData(uid, payload);
+  const seen = new Set(existingUrls);
+  const allLinks = payload.links || [];
+  const links = allLinks.filter((link) => {
+    const key = normalizeUrl(link.url);
+    if (!link.url || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  const result = await importData(uid, { ...payload, links });
+  return { ...result, duplicatesSkipped: allLinks.length - links.length };
 };

@@ -14,18 +14,23 @@ Barra lateral: navegação fixa com "Todos os Links", "Favoritos" e "Os Meus Tem
 Temas (categorias): crie temas (ex: "Trabalho", "Estudos") com ícone e cor personalizados. Ao criar um tema pode escolher uma das sugestões de nomes (Sistema: Caixa de Entrada, Arquivo, Gaveta, Por Ler…; Trabalho & Estudo; Pessoal), que também define o ícone.
 Contadores: veja quantos links existem em cada tema.
 Ordenar temas: no seletor junto a "Os Meus Temas" escolha Manual, A → Z, Z → A, Mais links ou Menos links.
-Reordenar: em modo Manual, arraste e solte os temas na barra lateral, ou os links dentro de um tema, para os organizar como quiser.
+Reordenar: em modo Manual, arraste e solte os temas na barra lateral, ou os links (pela pega ⋮⋮ que aparece ao passar o rato), para os organizar como quiser.
+Ordenar links: no cabeçalho da vista escolha Ordem manual, Mais recentes, Mais antigos, Nome A → Z ou Domínio.
 Disposição: no topo, alterne entre cartões em Grelha ou Em linha.
+Eliminar temas: no cabeçalho de um tema clique no caixote do lixo (ou em "Eliminar" no diálogo Editar Tema). Se o tema tiver links, escolha entre mantê-los (ficam sem tema, em "Todos os Links") ou eliminá-los também.
 
 3. Gestão de Links
 Adicionar: guarde URLs com título; o favicon e uma pré-visualização da página são obtidos automaticamente.
+Duplicados: ao adicionar um URL que já existe, a app avisa onde já está guardado. Na importação, os duplicados são ignorados.
+Guardar depressa: cole um URL (Ctrl+V) em qualquer sítio da app; use o botão "+ Guardar no Aroundwise" (Definições) na barra de marcadores do browser; ou, no Android com a app instalada, Partilhar → Aroundwise.
 Editar: clique no lápis no cartão do link para corrigir título, descrição, tema ou ícone.
 Favoritos: marque links importantes com uma estrela para acesso rápido.
 Abrir / Copiar: botões de ação rápida em cada cartão.
-Apagar: remova links que já não precisa.
+Apagar: remova links que já não precisa. Durante alguns segundos pode clicar em "Anular" para recuperar o link.
 
 4. Filtros e Pesquisa
-Barra de Pesquisa: encontre qualquer link pelo título ou URL instantaneamente dentro da vista atual.
+Barra de Pesquisa: procura em todos os temas ao mesmo tempo, pelo título, URL, descrição ou nome do tema (sem diferenciar acentos). Cada resultado mostra o tema a que pertence.
+Atalhos de teclado: N novo link · T novo tema · / pesquisar · Esc limpar a pesquisa.
 Navegação: clique em "Todos os Links", "Favoritos" ou num Tema na barra lateral para filtrar.
 
 5. Partilhar um Tema
@@ -47,7 +52,7 @@ Desktop (Chrome/Edge): clique no ícone de instalação na barra de endereço, o
 A app funciona como uma aplicação nativa, sem barra de navegador e em ecrã inteiro.
 
 Notas Técnicas
-Offline: a app funciona offline para consulta (cache da interface), mas requer internet para sincronizar dados novos (Firestore) e para a pré-visualização automática de links.
+Offline: a app funciona offline para consulta (cache da interface), mas requer internet para sincronizar dados novos (Firestore) e para a pré-visualização automática de links. No topo aparece "Sem ligação" ou "A sincronizar…" quando aplicável.
 Tema: design "Light Elegant" com modo escuro opcional.
 
 Como Executar

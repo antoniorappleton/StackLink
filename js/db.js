@@ -23,6 +23,15 @@ const getLinksCol = (uid) => collection(db, `users/${uid}/links`);
 const getCatsCol = (uid) => collection(db, `users/${uid}/categories`);
 const getSharedCol = () => collection(db, "sharedStacks");
 
+// Sync state for the offline / "A sincronizar" indicator.
+const syncMeta = (snapshot) => ({
+  pending: snapshot.metadata.hasPendingWrites,
+  fromCache: snapshot.metadata.fromCache,
+  // false when only the metadata changed (e.g. a write was confirmed), so
+  // the UI can skip a full re-render.
+  dataChanged: snapshot.docChanges().length > 0,
+});
+
 // --- Categories ---
 
 // Docs created before the "order" field existed don't have it, and
@@ -31,12 +40,12 @@ const getSharedCol = () => collection(db, "sharedStacks");
 // client-side with a fallback, see sortByOrder().
 export const subscribeToCategories = (uid, onUpdate) => {
   const q = query(getCatsCol(uid), orderBy("createdAt", "asc"));
-  return onSnapshot(q, (snapshot) => {
+  return onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
     const categories = snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...doc.data({ serverTimestamps: "estimate" }),
     }));
-    onUpdate(categories);
+    onUpdate(categories, syncMeta(snapshot));
   });
 };
 
@@ -68,6 +77,24 @@ export const updateCategory = async (uid, catId, name, icon, color) => {
   }
 };
 
+// Deletes a theme. Its links are either deleted too or kept without a theme
+// (categoryId = null, so they still show under "Todos os Links").
+// Writes are chunked because a Firestore batch holds at most 500 operations.
+export const deleteCategory = async (uid, catId, linkIds = [], deleteLinks = false) => {
+  const ops = linkIds.map((id) => (batch) => {
+    const ref = doc(db, `users/${uid}/links/${id}`);
+    if (deleteLinks) batch.delete(ref);
+    else batch.update(ref, { categoryId: null, updatedAt: serverTimestamp() });
+  });
+  ops.push((batch) => batch.delete(doc(db, `users/${uid}/categories/${catId}`)));
+
+  for (let i = 0; i < ops.length; i += 450) {
+    const batch = writeBatch(db);
+    ops.slice(i, i + 450).forEach((op) => op(batch));
+    await batch.commit();
+  }
+};
+
 export const reorderCategories = async (uid, orderedIds) => {
   const batch = writeBatch(db);
   orderedIds.forEach((id, index) => {
@@ -80,10 +107,16 @@ export const reorderCategories = async (uid, orderedIds) => {
 
 export const subscribeToLinks = (uid, onUpdate) => {
   const q = query(getLinksCol(uid), orderBy("createdAt", "desc"));
-  return onSnapshot(q, (snapshot) => {
-    const links = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    onUpdate(links);
+  return onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
+    const links = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data({ serverTimestamps: "estimate" }) }));
+    onUpdate(links, syncMeta(snapshot));
   });
+};
+
+// Restores a deleted link under its original id (used by "Anular").
+export const restoreLink = async (uid, link) => {
+  const { id, ...data } = link;
+  await setDoc(doc(db, `users/${uid}/links/${id}`), { ...data, updatedAt: serverTimestamp() });
 };
 
 // Sorts by the manual "order" field when present (drag & drop reordering),

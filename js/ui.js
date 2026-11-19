@@ -2,11 +2,13 @@ import {
   subscribeToCategories,
   addCategory,
   updateCategory,
+  deleteCategory,
   reorderCategories,
   subscribeToLinks,
   addLink,
   updateLink,
   deleteLink,
+  restoreLink,
   toggleFavorite,
   reorderLinks,
   sortByOrder,
@@ -15,7 +17,7 @@ import { ICONS } from "./icons.js";
 import { fetchLinkPreview } from "./preview.js";
 import { shareStack } from "./share.js";
 import { exportAsJson, exportAsBookmarksHtml, importFromFile } from "./importExport.js";
-import { showToast, getHostname, escapeHtml, safeHref } from "./utils.js";
+import { showToast, getHostname, escapeHtml, safeHref, normalizeUrl, foldText, extractUrl } from "./utils.js";
 import { APP_VERSION } from "./version.js";
 
 // State
@@ -30,6 +32,12 @@ let cardLayout =
   (localStorage.getItem("aroundwise_view_mode") === "compact" ? "list" : "grid");
 // Theme ordering in the sidebar: manual | az | za | most | least
 let stacksSort = localStorage.getItem("aroundwise_stacks_sort") || "manual";
+// Link ordering in the main view: manual | recent | oldest | az | domain
+let linksSort = localStorage.getItem("aroundwise_links_sort") || "manual";
+// Sync indicator state
+let syncState = { links: { pending: false, fromCache: false }, cats: { pending: false, fromCache: false } };
+
+const GRIP_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="5" r="1.6"/><circle cx="15" cy="5" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="19" r="1.6"/><circle cx="15" cy="19" r="1.6"/></svg>';
 
 // Suggested theme names ("temas / gavetas / arquivos") with a matching icon.
 const THEME_PRESETS = [
@@ -87,6 +95,10 @@ const viewIcon = document.getElementById("view-icon");
 const viewTitle = document.getElementById("view-title");
 const shareStackBtn = document.getElementById("share-stack-btn");
 const editStackBtn = document.getElementById("edit-stack-btn");
+const deleteStackBtn = document.getElementById("delete-stack-btn");
+const deleteCategoryDialog = document.getElementById("delete-category-dialog");
+const deleteCategoryForm = document.getElementById("delete-category-form");
+let deletingCategoryId = null;
 
 // Dialogs
 const linkDialog = document.getElementById("link-dialog");
@@ -104,6 +116,9 @@ const linkPreviewDomain = document.getElementById("link-preview-domain");
 const addLinkBtn = document.getElementById("add-link-btn");
 const addCategoryBtn = document.getElementById("add-category-btn");
 const stacksSortSelect = document.getElementById("stacks-sort");
+const linksSortSelect = document.getElementById("links-sort");
+const syncIndicator = document.getElementById("sync-indicator");
+const duplicateHint = document.getElementById("link-duplicate-hint");
 
 // --- Initialization ---
 
@@ -113,14 +128,20 @@ export const initUI = (user) => {
 
   updateUserChip();
 
-  subscribeToCategories(user.uid, (newCategories) => {
+  subscribeToCategories(user.uid, (newCategories, meta) => {
+    syncState.cats = meta;
+    updateSyncIndicator();
+    if (!meta.dataChanged && categories.length) return;
     categories = newCategories;
     renderSidebar();
     renderMainView();
     updateCategorySelect();
   });
 
-  subscribeToLinks(user.uid, (newLinks) => {
+  subscribeToLinks(user.uid, (newLinks, meta) => {
+    syncState.links = meta;
+    updateSyncIndicator();
+    if (!meta.dataChanged && links.length) return;
     links = newLinks;
     renderSidebar();
     renderMainView();
@@ -133,6 +154,8 @@ export const initUI = (user) => {
   renderSidebar();
   renderMainView();
   applyCardLayout();
+  updateSyncIndicator();
+  handleIncomingShare();
 
   const versionEl = document.getElementById("app-version");
   if (versionEl) versionEl.textContent = `Aroundwise v${APP_VERSION}`;
@@ -175,12 +198,35 @@ const setupEventListeners = () => {
   linkForm.addEventListener("submit", handleLinkSubmit);
   categoryForm.addEventListener("submit", handleCategorySubmit);
 
-  searchInput.addEventListener("input", renderLinksGrid);
+  searchInput.addEventListener("input", renderMainView);
+
+  if (linksSortSelect) {
+    linksSortSelect.value = linksSort;
+    linksSortSelect.addEventListener("change", () => {
+      linksSort = linksSortSelect.value;
+      localStorage.setItem("aroundwise_links_sort", linksSort);
+      renderLinksGrid();
+    });
+  }
+
+  document.getElementById("link-url").addEventListener("input", updateDuplicateHint);
+  window.addEventListener("online", updateSyncIndicator);
+  window.addEventListener("offline", updateSyncIndicator);
+  document.addEventListener("keydown", handleShortcuts);
+  document.addEventListener("paste", handleGlobalPaste);
+  setupBookmarklet();
 
   document.getElementById("link-url").addEventListener("blur", handleUrlPreview);
 
   shareStackBtn.addEventListener("click", handleShareStack);
   editStackBtn.addEventListener("click", handleEditStack);
+  deleteStackBtn.addEventListener("click", () => openDeleteCategoryDialog(activeView));
+  document.getElementById("cat-delete-btn").addEventListener("click", () => {
+    const id = editingCategoryId;
+    categoryDialog.close();
+    openDeleteCategoryDialog(id);
+  });
+  deleteCategoryForm.addEventListener("submit", handleDeleteCategorySubmit);
 
   // Sidebar nav (all / favorites)
   document.querySelectorAll(".nav-item").forEach((btn) => {
@@ -289,6 +335,7 @@ function makeSortable(container, itemSelector, onReorder) {
 
 const setActiveView = (id) => {
   activeView = id;
+  searchInput.value = "";
   closeSidebar();
   renderSidebar();
   renderMainView();
@@ -316,6 +363,7 @@ const renderSidebar = () => {
       const active = cat.id === activeView;
       return `
         <div class="stack-nav-item${active ? " active" : ""}" draggable="${isManual}" data-id="${cat.id}" style="--cat-accent: ${cat.color || "var(--accent-primary)"}">
+            ${isManual ? `<span class="drag-handle" title="Arrastar para reordenar">${GRIP_ICON}</span>` : ""}
             <span class="stack-dot"></span>
             <span class="nav-item-label">${escapeHtml(cat.name)}</span>
             <span class="nav-item-count">${count}</span>
@@ -364,13 +412,22 @@ const renderMainView = () => {
     }
   }
 
+  const term = searchInput.value.trim();
+  if (term) {
+    title = `Pesquisa: “${term}”`;
+    iconHtml = ICONS.search || ICONS.globe;
+    color = "var(--accent-primary)";
+  }
+  const showStackActions = isCustomStack && !term;
+
   viewTitle.textContent = title;
   viewIcon.innerHTML = iconHtml;
   viewIcon.style.color = color;
-  viewIcon.style.background = isCustomStack ? `${color}1a` : "var(--accent-soft)";
+  viewIcon.style.background = showStackActions ? `${color}1a` : "var(--accent-soft)";
 
-  shareStackBtn.classList.toggle("hidden", !isCustomStack);
-  editStackBtn.classList.toggle("hidden", !isCustomStack);
+  shareStackBtn.classList.toggle("hidden", !showStackActions);
+  editStackBtn.classList.toggle("hidden", !showStackActions);
+  deleteStackBtn.classList.toggle("hidden", !showStackActions);
 
   renderLinksGrid();
 };
@@ -387,35 +444,63 @@ const computeCounts = (allLinks) => {
   );
 };
 
+const isSearching = () => searchInput.value.trim().length > 0;
+
+const categoryName = (id) => categories.find((c) => c.id === id)?.name || "";
+
+// Searching is global: it ignores the open view and looks in every theme,
+// matching title, URL, description and theme name (accent-insensitive).
 const getFilteredLinks = () => {
-  const searchTerm = searchInput.value.toLowerCase().trim();
-  return links
-    .filter((link) => {
-      if (activeView === "favorites" && !link.favorite) return false;
-      if (activeView !== "all" && activeView !== "favorites" && link.categoryId !== activeView) return false;
-      if (searchTerm) {
-        return (
-          link.title?.toLowerCase().includes(searchTerm) ||
-          link.url?.toLowerCase().includes(searchTerm)
-        );
-      }
-      return true;
-    })
-    .sort((a, b) => sortByOrder(a, b, true));
+  const words = foldText(searchInput.value.trim()).split(/\s+/).filter(Boolean);
+  const filtered = links.filter((link) => {
+    if (words.length) {
+      const haystack = foldText(
+        [link.title, link.url, link.description, categoryName(link.categoryId)].join(" ")
+      );
+      return words.every((w) => haystack.includes(w));
+    }
+    if (activeView === "favorites" && !link.favorite) return false;
+    if (activeView !== "all" && activeView !== "favorites" && link.categoryId !== activeView) return false;
+    return true;
+  });
+  return filtered.sort(compareLinks);
 };
+
+const createdMs = (l) => (l.createdAt?.toMillis ? l.createdAt.toMillis() : Date.now());
+
+const compareLinks = (a, b) => {
+  switch (linksSort) {
+    case "recent":
+      return createdMs(b) - createdMs(a);
+    case "oldest":
+      return createdMs(a) - createdMs(b);
+    case "az":
+      return (a.title || "").localeCompare(b.title || "", "pt", { sensitivity: "base" });
+    case "domain":
+      return getHostname(a.url).localeCompare(getHostname(b.url), "pt") ||
+        (a.title || "").localeCompare(b.title || "", "pt", { sensitivity: "base" });
+    default:
+      return sortByOrder(a, b, true);
+  }
+};
+
+// Drag & drop only makes sense in manual order and outside search results.
+const canDragLinks = () => linksSort === "manual" && !isSearching();
 
 const renderLinksGrid = () => {
   const filtered = getFilteredLinks();
-  const count = activeView === "all" || activeView === "favorites" || categories.some((c) => c.id === activeView)
+  const count = isSearching() || activeView === "all" || activeView === "favorites" || categories.some((c) => c.id === activeView)
     ? filtered.length
     : 0;
-  document.getElementById("view-count").textContent = `${count} ${count === 1 ? "item" : "itens"}`;
+  document.getElementById("view-count").textContent =
+    `${count} ${count === 1 ? "item" : "itens"}${isSearching() ? " em todos os temas" : ""}`;
+  linksView.classList.toggle("is-draggable", canDragLinks());
 
   if (filtered.length === 0) {
     linksView.innerHTML = `
       <div class="empty-state">
         <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        <p>Ainda não há links aqui.</p>
+        <p>${isSearching() ? "Nenhum link encontrado em nenhum tema." : "Ainda não há links aqui."}</p>
       </div>`;
     return;
   }
@@ -435,17 +520,25 @@ const renderLinkCard = (link) => {
     : ICONS.star;
 
   const href = safeHref(link.url);
+  const draggable = canDragLinks();
+  const cat = link.categoryId && link.categoryId !== activeView
+    ? categories.find((c) => c.id === link.categoryId)
+    : null;
+  const themeTag = cat
+    ? `<span class="card-theme" style="--cat-accent: ${escapeHtml(cat.color || "var(--accent-primary)")}"><span class="stack-dot"></span>${escapeHtml(cat.name)}</span>`
+    : "";
 
   return `
-    <div class="link-card" draggable="true" data-id="${link.id}" data-url="${escapeHtml(href)}">
+    <div class="link-card" draggable="${draggable}" data-id="${link.id}" data-url="${escapeHtml(href)}">
         <div class="card-header">
             <div class="globe-icon">${iconInner}</div>
+            ${draggable ? `<span class="drag-handle" title="Arrastar para reordenar">${GRIP_ICON}</span>` : ""}
             <button type="button" class="fav-btn btn-icon${link.favorite ? " active" : ""}" data-id="${link.id}" title="Favorito">${starIcon}</button>
         </div>
         <div class="card-body">
             <div class="card-title" title="${escapeHtml(link.title)}">${escapeHtml(link.title)}</div>
             <p class="card-desc">${escapeHtml(link.description) || "Sem descrição"}</p>
-            <div class="card-domain">${hostname}</div>
+            <div class="card-domain">${escapeHtml(hostname)}${themeTag}</div>
         </div>
         <div class="card-footer">
             <div class="card-actions">
@@ -466,10 +559,11 @@ const renderLinkCard = (link) => {
 
 // --- Link Dialog ---
 
-const openLinkDialog = (link = null) => {
+const openLinkDialog = (link = null, prefill = null) => {
   editingLinkId = link?.id || null;
   linkForm.reset();
   resetLinkPreview();
+  duplicateHint?.classList.add("hidden");
   document.getElementById("link-icon").value = "";
 
   if (link) {
@@ -491,6 +585,34 @@ const openLinkDialog = (link = null) => {
   }
 
   linkDialog.showModal();
+
+  if (!link && prefill?.url) {
+    const urlInput = document.getElementById("link-url");
+    urlInput.value = prefill.url;
+    if (prefill.title) document.getElementById("link-title").value = prefill.title;
+    updateDuplicateHint();
+    handleUrlPreview({ target: urlInput });
+    document.getElementById("link-title").focus();
+  }
+};
+
+// Shows "Já guardado em …" under the URL field while adding a link.
+const findDuplicate = (url) => {
+  const key = normalizeUrl(url);
+  return links.find((l) => l.id !== editingLinkId && normalizeUrl(l.url) === key) || null;
+};
+
+const updateDuplicateHint = () => {
+  if (!duplicateHint) return;
+  const url = document.getElementById("link-url").value.trim();
+  const dup = url ? findDuplicate(url) : null;
+  if (!dup) {
+    duplicateHint.classList.add("hidden");
+    return;
+  }
+  const where = dup.categoryId ? `no tema “${categoryName(dup.categoryId)}”` : "sem tema";
+  duplicateHint.textContent = `Este link já está guardado ${where} como “${dup.title}”.`;
+  duplicateHint.classList.remove("hidden");
 };
 
 const resetLinkPreview = () => {
@@ -544,13 +666,61 @@ const openCategoryDialog = (cat = null) => {
     document.getElementById("cat-color").value = cat.color || "#15414A";
     document.querySelector("#category-dialog .dialog-title").textContent = "Editar Tema";
     document.getElementById("cat-submit-btn").textContent = "Guardar Tema";
+    document.getElementById("cat-delete-btn").classList.remove("hidden");
   } else {
+    document.getElementById("cat-delete-btn").classList.add("hidden");
     document.querySelector("#category-dialog .dialog-title").textContent = "Criar Novo Tema";
     document.getElementById("cat-submit-btn").textContent = "Criar Tema";
   }
 
   syncPresetChips();
   categoryDialog.showModal();
+};
+
+// --- Delete Theme ---
+
+const openDeleteCategoryDialog = (catId) => {
+  const cat = categories.find((c) => c.id === catId);
+  if (!cat) return;
+  deletingCategoryId = cat.id;
+  deleteCategoryForm.reset();
+
+  const n = links.filter((l) => l.categoryId === cat.id).length;
+  document.getElementById("delete-cat-name").textContent = `“${cat.name}”`;
+  document.getElementById("delete-cat-links-options").classList.toggle("hidden", n === 0);
+  document.getElementById("delete-cat-keep-text").textContent =
+    n === 1
+      ? "O link deste tema fica sem tema e continua em “Todos os Links”."
+      : `Os ${n} links deste tema ficam sem tema e continuam em “Todos os Links”.`;
+  document.getElementById("delete-cat-delete-text").textContent =
+    n === 1
+      ? "O link deste tema é apagado definitivamente."
+      : `Os ${n} links deste tema são apagados definitivamente.`;
+
+  deleteCategoryDialog.showModal();
+};
+
+const handleDeleteCategorySubmit = async (e) => {
+  e.preventDefault();
+  const cat = categories.find((c) => c.id === deletingCategoryId);
+  if (!cat) {
+    deleteCategoryDialog.close();
+    return;
+  }
+  const linkIds = links.filter((l) => l.categoryId === cat.id).map((l) => l.id);
+  const mode = deleteCategoryForm.querySelector('input[name="delete-links-mode"]:checked')?.value;
+  const alsoDeleteLinks = linkIds.length > 0 && mode === "delete";
+
+  try {
+    await deleteCategory(currentUser.uid, cat.id, linkIds, alsoDeleteLinks);
+    deleteCategoryDialog.close();
+    deletingCategoryId = null;
+    if (activeView === cat.id) setActiveView("all");
+    showToast(`Tema “${cat.name}” eliminado.`);
+  } catch (error) {
+    console.error(error);
+    showToast("Não foi possível eliminar o tema.", "error");
+  }
 };
 
 const handleEditStack = () => {
@@ -565,6 +735,11 @@ const handleLinkSubmit = async (e) => {
   const url = document.getElementById("link-url").value;
   if (safeHref(url) === "#") {
     showToast("Só são permitidos links http:// ou https://.", "error");
+    return;
+  }
+
+  const dup = findDuplicate(url);
+  if (dup && !confirm(`Este link já está guardado como “${dup.title}”. Guardar mesmo assim?`)) {
     return;
   }
 
@@ -620,7 +795,7 @@ const handleLinkActions = async (e) => {
   const btn = e.target.closest("button");
   const linkCard = e.target.closest(".link-card");
 
-  if (e.target.closest("a")) return;
+  if (e.target.closest("a") || e.target.closest(".drag-handle")) return;
 
   if (!btn) {
     if (linkCard) {
@@ -634,8 +809,25 @@ const handleLinkActions = async (e) => {
 
   if (btn.classList.contains("trash-btn")) {
     e.stopPropagation();
-    if (confirm("Tem a certeza que deseja apagar este link?")) {
+    const link = links.find((l) => l.id === linkId);
+    if (!link) return;
+    try {
       await deleteLink(currentUser.uid, linkId);
+      showToast(`“${link.title}” apagado.`, "success", {
+        actionLabel: "Anular",
+        onAction: async () => {
+          try {
+            await restoreLink(currentUser.uid, link);
+            showToast("Link recuperado.");
+          } catch (err) {
+            console.error(err);
+            showToast("Não foi possível recuperar o link.", "error");
+          }
+        },
+      });
+    } catch (err) {
+      console.error(err);
+      showToast("Não foi possível apagar o link.", "error");
     }
   } else if (btn.classList.contains("fav-btn")) {
     e.stopPropagation();
@@ -676,14 +868,111 @@ const handleImportFile = async (e) => {
   const file = e.target.files?.[0];
   if (!file) return;
   try {
-    const result = await importFromFile(currentUser.uid, file);
-    showToast(`Importado: ${result.categoriesImported} temas, ${result.linksImported} links.`);
+    const existing = new Set(links.map((l) => normalizeUrl(l.url)));
+    const result = await importFromFile(currentUser.uid, file, existing);
+    const skipped = result.duplicatesSkipped
+      ? ` (${result.duplicatesSkipped} duplicado${result.duplicatesSkipped === 1 ? "" : "s"} ignorado${result.duplicatesSkipped === 1 ? "" : "s"})`
+      : "";
+    showToast(`Importado: ${result.categoriesImported} temas, ${result.linksImported} links${skipped}.`);
   } catch (err) {
     console.error(err);
     showToast("Não foi possível importar o ficheiro.", "error");
   } finally {
     e.target.value = "";
   }
+};
+
+// --- Sync / offline indicator ---
+
+const updateSyncIndicator = () => {
+  if (!syncIndicator) return;
+  const offline = !navigator.onLine;
+  const pending = syncState.links.pending || syncState.cats.pending;
+  let label = "";
+  let state = "";
+  if (offline) {
+    label = pending ? "Sem ligação · alterações por enviar" : "Sem ligação";
+    state = "offline";
+  } else if (pending) {
+    label = "A sincronizar…";
+    state = "syncing";
+  }
+  syncIndicator.textContent = label;
+  syncIndicator.dataset.state = state;
+  syncIndicator.classList.toggle("hidden", !label);
+};
+
+// --- Keyboard shortcuts & paste ---
+
+const isTypingTarget = (el) =>
+  el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.isContentEditable);
+
+const anyDialogOpen = () => !!document.querySelector("dialog[open]");
+
+const handleShortcuts = (e) => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  if (e.key === "Escape" && document.activeElement === searchInput) {
+    if (searchInput.value) {
+      searchInput.value = "";
+      renderMainView();
+    }
+    searchInput.blur();
+    return;
+  }
+
+  if (isTypingTarget(document.activeElement) || anyDialogOpen()) return;
+
+  if (e.key === "n" || e.key === "N") {
+    e.preventDefault();
+    openLinkDialog();
+  } else if (e.key === "/") {
+    e.preventDefault();
+    searchInput.focus();
+    searchInput.select();
+  } else if (e.key === "t" || e.key === "T") {
+    e.preventDefault();
+    openCategoryDialog();
+  }
+};
+
+// Pasting a URL anywhere (outside a text field) opens "Novo Link" pre-filled.
+const handleGlobalPaste = (e) => {
+  if (isTypingTarget(document.activeElement) || anyDialogOpen()) return;
+  const text = e.clipboardData?.getData("text") || "";
+  const url = extractUrl(text);
+  if (!url || safeHref(url) === "#") return;
+  e.preventDefault();
+  openLinkDialog(null, { url });
+};
+
+// --- Share Target (Android "Partilhar → Aroundwise") & bookmarklet ---
+
+const handleIncomingShare = () => {
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get("url") || params.get("text") || "";
+  const url = extractUrl(params.get("url")) || extractUrl(params.get("text")) || extractUrl(raw);
+  if (!url) return;
+  let title = (params.get("title") || "").trim();
+  if (title && extractUrl(title)) title = "";
+
+  // Clean the address bar so a reload doesn't re-open the dialog.
+  window.history.replaceState({}, "", window.location.pathname);
+  openLinkDialog(null, { url, title });
+};
+
+const setupBookmarklet = () => {
+  const a = document.getElementById("bookmarklet-link");
+  if (!a) return;
+  const appUrl = `${window.location.origin}${window.location.pathname}`;
+  const code =
+    `(function(){window.open(${JSON.stringify(appUrl)}+'?url='+encodeURIComponent(location.href)` +
+    `+'&title='+encodeURIComponent(document.title),'_blank');})();`;
+  a.setAttribute("href", `javascript:${code}`);
+  a.addEventListener("click", (e) => {
+    e.preventDefault();
+    showToast("Arraste este botão para a barra de marcadores do browser.");
+  });
 };
 
 const applyCardLayout = () => {

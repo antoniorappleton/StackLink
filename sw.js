@@ -1,4 +1,4 @@
-const CACHE_NAME = "aroundwise-v7";
+const CACHE_NAME = "aroundwise-v9";
 const ASSETS_TO_CACHE = [
   "./",
   "./css/style.css",
@@ -51,9 +51,13 @@ self.addEventListener("fetch", (event) => {
   // public share route - only cache same-origin static assets.
   if (event.request.method !== "GET") return;
 
+  // Navigations may carry a query string (e.g. the Android share target
+  // "/?url=..."), so match the cached app shell ignoring the search part.
+  const matchOptions = event.request.mode === "navigate" ? { ignoreSearch: true } : undefined;
+
   event.respondWith(
     caches
-      .match(event.request)
+      .match(event.request, matchOptions)
       .then((response) => response || fetch(event.request)),
   );
 });
